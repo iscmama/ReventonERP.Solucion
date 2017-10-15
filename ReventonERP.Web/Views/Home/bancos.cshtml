@@ -4,6 +4,14 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+<style type="text/css">
+    .modal-body {
+        height: 350px;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+</style>
+
 <script type="text/javascript">
     jQuery(function ($) {
 
@@ -154,15 +162,221 @@
             e.preventDefault();
         });
 
-
         $("#fechaFactura").datepicker({
             showOtherMonths: true,
             selectOtherMonths: false,
             dateFormat: 'dd//mm/yy'
         });
 
-        $('#btnEntrar').click(function () {
-            window.location.href = '/Home/index'
+        $("#fechaPago").datepicker({
+            showOtherMonths: true,
+            selectOtherMonths: false,
+            dateFormat: 'dd//mm/yy'
+        });
+
+        $('#id-input-file-1 , #id-input-file-2').ace_file_input({
+            no_file: 'Sin archivo ...',
+            btn_choose: 'Subir',
+            btn_change: 'Cambiar',
+            droppable: false,
+            onchange: null,
+            thumbnail: false, //| true | large
+            whitelist:'xls|xlsx'
+            //blacklist:'exe|php'
+            //onchange:''
+            //
+        });
+        //pre-show a file name, for example a previously selected file
+        //$('#id-input-file-1').ace_file_input('show_file_list', ['myfile.txt'])
+
+
+        $('#id-input-file-3').ace_file_input({
+            style: 'well',
+            btn_choose: 'Coloque el archivo aquí o haga clic para elegir',
+            btn_change: null,
+            no_icon: 'ace-icon fa fa-cloud-upload',
+            droppable: true,
+            thumbnail: 'small'//large | fit
+            //,icon_remove:null//set null, to hide remove/reset button
+            /**,before_change:function(files, dropped) {
+                //Check an example below
+                //or examples/file-upload.html
+                return true;
+            }*/
+            /**,before_remove : function() {
+                return true;
+            }*/
+            ,
+            preview_error: function (filename, error_code) {
+                //name of the file that failed
+                //error_code values
+                //1 = 'FILE_LOAD_FAILED',
+                //2 = 'IMAGE_LOAD_FAILED',
+                //3 = 'THUMBNAIL_FAILED'
+                //alert(error_code);
+            }
+
+        }).on('change', function () {
+            //console.log($(this).data('ace_input_files'));
+            //console.log($(this).data('ace_input_method'));
+        });
+
+
+        //$('#id-input-file-3')
+        //.ace_file_input('show_file_list', [
+        //{type: 'image', name: 'name of image', path: 'http://path/to/image/for/preview'},
+        //{type: 'file', name: 'hello.txt'}
+        //]);
+
+
+
+
+        //dynamically change allowed formats by changing allowExt && allowMime function
+        $('#id-file-format').removeAttr('checked').on('change', function () {
+            var whitelist_ext, whitelist_mime;
+            var btn_choose
+            var no_icon
+            if (this.checked) {
+                btn_choose = "Drop images here or click to choose";
+                no_icon = "ace-icon fa fa-picture-o";
+
+                whitelist_ext = ["jpeg", "jpg", "png", "gif", "bmp"];
+                whitelist_mime = ["image/jpg", "image/jpeg", "image/png", "image/gif", "image/bmp"];
+            }
+            else {
+                btn_choose = "Drop files here or click to choose";
+                no_icon = "ace-icon fa fa-cloud-upload";
+
+                whitelist_ext = null;//all extensions are acceptable
+                whitelist_mime = null;//all mimes are acceptable
+            }
+            var file_input = $('#id-input-file-3');
+            file_input
+                .ace_file_input('update_settings',
+                {
+                    'btn_choose': btn_choose,
+                    'no_icon': no_icon,
+                    'allowExt': whitelist_ext,
+                    'allowMime': whitelist_mime
+                })
+            file_input.ace_file_input('reset_input');
+
+            file_input
+                .off('file.error.ace')
+                .on('file.error.ace', function (e, info) {
+                    //console.log(info.file_count);//number of selected files
+                    //console.log(info.invalid_count);//number of invalid files
+                    //console.log(info.error_list);//a list of errors in the following format
+
+                    //info.error_count['ext']
+                    //info.error_count['mime']
+                    //info.error_count['size']
+
+                    //info.error_list['ext']  = [list of file names with invalid extension]
+                    //info.error_list['mime'] = [list of file names with invalid mimetype]
+                    //info.error_list['size'] = [list of file names with invalid size]
+
+
+                    /**
+                    if( !info.dropped ) {
+                        //perhapse reset file field if files have been selected, and there are invalid files among them
+                        //when files are dropped, only valid files will be added to our file array
+                        e.preventDefault();//it will rest input
+                    }
+                    */
+
+
+                    //if files have been selected (not dropped), you can choose to reset input
+                    //because browser keeps all selected files anyway and this cannot be changed
+                    //we can only reset file field to become empty again
+                    //on any case you still should check files with your server side script
+                    //because any arbitrary file can be uploaded by user and it's not safe to rely on browser-side measures
+                });
+
+
+            /**
+            file_input
+            .off('file.preview.ace')
+            .on('file.preview.ace', function(e, info) {
+                console.log(info.file.width);
+                console.log(info.file.height);
+                e.preventDefault();//to prevent preview
+            });
+            */
+
+        });
+
+        //override dialog's title function to allow for HTML titles
+        $.widget("ui.dialog", $.extend({}, $.ui.dialog.prototype, {
+            _title: function (title) {
+                var $title = this.options.title || '&nbsp;'
+                if (("title_html" in this.options) && this.options.title_html == true)
+                    title.html($title);
+                else title.text($title);
+            }
+        }));
+
+        $("#id-btn-dialog1").on('click', function (e) {
+            e.preventDefault();
+
+            var dialog = $("#dialog-message").removeClass('hide').dialog({
+                modal: true,
+                title: "<div class='widget-header widget-header-small'><h4 class='smaller'><i class='ace-icon fa fa-check'></i> jQuery UI Dialog</h4></div>",
+                title_html: true,
+                buttons: [
+                    {
+                        text: "Cancel",
+                        "class": "btn btn-minier",
+                        click: function () {
+                            $(this).dialog("close");
+                        }
+                    },
+                    {
+                        text: "OK",
+                        "class": "btn btn-primary btn-minier",
+                        click: function () {
+                            $(this).dialog("close");
+                        }
+                    }
+                ]
+            });
+
+            /**
+            dialog.data( "uiDialog" )._title = function(title) {
+                title.html( this.options.title );
+            };
+            **/
+        });
+
+
+        $("#id-btn-dialog2").on('click', function (e) {
+
+            e.preventDefault();
+
+            $("#dialog-confirm").removeClass('hide').dialog({
+                resizable: false,
+                width: '320',
+                modal: true,
+                title: "<div class='widget-header'><h4 class='smaller'><i class='ace-icon fa fa-exclamation-triangle red'></i> Confirmar eliminación</h4></div>",
+                title_html: true,
+                buttons: [
+                    {
+                        html: "<i class='ace-icon fa fa-trash-o bigger-110'></i>&nbsp; Si",
+                        "class": "btn btn-danger btn-minier",
+                        click: function () {
+                            $(this).dialog("close");
+                        }
+                    }
+                    ,
+                    {
+                        html: "<i class='ace-icon fa fa-times bigger-110'></i>&nbsp; No",
+                        "class": "btn btn-minier",
+                        click: function () {
+                            $(this).dialog("close");
+                        }
+                    }
+                ]
+            });
         });
 
     });
@@ -171,17 +385,39 @@
 <div class="row">
     <div class="col-xs-12">
         <h3 class="header smaller lighter blue">Bancos</h3>
+       
+        <p></p>
 
-        <div class="clearfix">
-            <div class="pull-right tableTools-container"></div>
-        </div>
-        <div class="table-header">
-            Estatus Actual de Bancos
-        </div>
+        <a href="#modal-table" role="button" data-toggle="modal" class="btn btn-app btn-primary">
+            <i class="ace-icon fa fa-pencil-square-o bigger-230"></i>
+            Nuevo
+        </a>
+
+        <a href="#modalCarga" role="button" data-toggle="modal"  class="btn btn-app btn-warning">
+            <i class="ace-icon fa fa-cloud-upload bigger-200"></i>
+            Carga
+        </a>
+
+    </div>
+</div>
+
+<div class="hr hr-double hr-dotted hr18"></div>
+
+<div class="row">
+    <div class="col-xs-12">
+       
 
         <!-- div.table-responsive -->
         <!-- div.dataTables_borderWrap -->
         <div>
+            <div class="clearfix">
+                <div class="pull-right tableTools-container"></div>
+            </div>
+            <div class="table-header">
+                Detalle
+            </div>
+
+
             <table id="dynamic-table" class="table table-striped table-bordered table-hover">
                 <thead>
                     <tr>
@@ -191,7 +427,7 @@
                                 <span class="lbl"></span>
                             </label>
                         </th>
-                        <th class="hidden-480">Número</th>
+                        <th class="hidden-480">Número Cheque</th>
                         <th class="hidden-480">
                             <i class="ace-icon fa fa-clock-o bigger-110 hidden-480"></i>
                         Fecha Pago</th>
@@ -218,7 +454,6 @@
                                 <span class="lbl"></span>
                             </label>
                         </td>
-
                         <td>
                             Pago Electron
                         </td>
@@ -235,15 +470,15 @@
                         </td>
                         <td>
                             <div class="hidden-sm hidden-xs action-buttons">
-                                <a class="blue" href="#modal-table" role="button" data-toggle="modal">
+                                <a class="blue" href="#modalBanco" role="button" data-toggle="modal">
                                     <i class="ace-icon fa fa-search-plus bigger-130"></i>
                                 </a>
 
-                                <a class="green" href="#">
+                                <a class="green" href="#modalBanco" role="button" data-toggle="modal">
                                     <i class="ace-icon fa fa-pencil bigger-130"></i>
                                 </a>
 
-                                <a class="red" href="#">
+                                <a class="red" href="#" id="id-btn-dialog2">
                                     <i class="ace-icon fa fa-trash-o bigger-130"></i>
                                 </a>
                             </div>
@@ -305,14 +540,7 @@
             <div class="modal-body no-padding">
                 <form class="form-horizontal" role="form">
 
-                    <div class="form-group">
-                        <label class="col-sm-3 control-label no-padding-right" for="form-field-1">Número Factura </label>
-
-                        <div class="col-sm-9">
-                            <input type="text" id="numeroFactura" placeholder="Número Factura" />
-                        </div>
-
-                    </div>
+                  
 
                     <div class="form-group">
                         <label class="col-sm-3 control-label no-padding-right" for="fechaFactura">Fecha Factura </label>
@@ -446,7 +674,7 @@
                     Guardar
                 </button>
 
-                <button class="btn btn-danger pull-right" data-dismiss="modal">
+                <button class="btn btn-default pull-right" data-dismiss="modal">
                     <i class="ace-icon fa fa-times"></i>
                     Salir
                 </button>
@@ -455,4 +683,188 @@
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
+</div>
+
+<div id="modalCarga" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header no-padding">
+                <div class="table-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        <span class="white">&times;</span>
+                    </button>
+                    Carga Mavisa Reporte
+                </div>
+            </div>
+
+            <div class="modal-body no-padding">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <p></p>
+                        <div class="form-group">
+                            <div class="col-xs-12">
+                                <input type="file" id="id-input-file-3" accept=".xls, .xlsx" />
+                            </div>
+                        </div>
+
+                        <label>
+                            <span class="red"> * Solo archivos Excel</span>
+                        </label>
+
+                    </div>
+
+
+                </div>
+            </div>
+
+            <div class="modal-footer no-margin-top">
+
+                <button class="btn btn-warning pull-left" type="button">
+                    <i class="ace-icon fa fa-check bigger-110"></i>
+                    Cargar
+                </button>
+
+                <button class="btn btn-default pull-right" data-dismiss="modal">
+                    <i class="ace-icon fa fa-times"></i>
+                    Salir
+                </button>
+
+
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+<div id="modalBanco" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header no-padding">
+                <div class="table-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        <span class="white">&times;</span>
+                    </button>
+                    Registro de Banco
+                </div>
+            </div>
+
+            <div class="modal-body no-padding">
+                <form class="form-horizontal" role="form">
+
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="form-field-1">No Cheque </label>
+
+                        <div class="col-sm-9">
+                            <input type="text" id="form-field-1" placeholder="No Cheque" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="form-field-1">Fecha Pago </label>
+
+                        <div class="col-sm-9">
+                            <div class="row">
+                                <div class="col-sm-7">
+                                    <div class="input-group">
+                                        <input class="form-control date-picker" id="fechaPago" type="text" data-date-format="dd-mm-yyyy" placeholder="dd/mm/yyyy" />
+                                        <span class="input-group-addon">
+                                            <i class="fa fa-calendar bigger-110"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="proveedor">Proveedor </label>
+
+                        <div class="col-sm-9">
+                            <input type="text" id="proveedor" placeholder="Proveedor" class="col-xs-10" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="form-field-1">Número Factura </label>
+
+                        <div class="col-sm-9">
+                            <input type="text" id="numeroFactura" placeholder="Número Factura" />
+                        </div>
+
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="fechaFactura">Fecha Factura </label>
+
+                        <div class="col-sm-9">
+                            <div class="row">
+                                <div class="col-sm-7">
+                                    <div class="input-group">
+                                        <input class="form-control date-picker" id="fechaFactura" type="text" data-date-format="dd-mm-yyyy" placeholder="dd/mm/yyy" />
+                                        <span class="input-group-addon">
+                                            <i class="fa fa-calendar bigger-110"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="form-field-2">Depositos</label>
+
+                        <div class="col-sm-9">
+                            <input type="text" id="form-field-2" placeholder="Depositos" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="form-field-2">Cargos</label>
+
+                        <div class="col-sm-9">
+                            <input type="text" id="form-field-2" placeholder="Cargos" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="form-field-2">Saldo</label>
+
+                        <div class="col-sm-9">
+                            <input type="text" id="form-field-2" placeholder="Saldo" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="form-field-2">Estatus</label>
+
+                        <div class="col-sm-9">
+                            <input type="text" id="form-field-2" placeholder="Estatus" />
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+
+            <div class="modal-footer no-margin-top">
+
+                <button class="btn btn-info pull-left" type="button">
+                    <i class="ace-icon fa fa-check bigger-110"></i>
+                    Guardar
+                </button>
+
+                <button class="btn btn-default pull-right" data-dismiss="modal">
+                    <i class="ace-icon fa fa-times"></i>
+                    Salir
+                </button>
+
+
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+<div id="dialog-confirm" class="hide">
+    <p class="bigger-110 bolder center grey">
+        <i class="ace-icon fa fa-hand-o-right blue bigger-120"></i>
+        ¿Seguro que eliminara el registro?
+    </p>
 </div>
