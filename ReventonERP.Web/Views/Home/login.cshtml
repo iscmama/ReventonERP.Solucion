@@ -1,0 +1,122 @@
+﻿
+@{
+    ViewBag.Title = "login";
+    Layout = "~/Views/Shared/_LayoutLogin.cshtml";
+}
+
+<style type="text/css">
+    .login-layout .widget-box .widget-body .toolbar > div > a {
+        font-size: 13px;
+        text-shadow: 1px 0 1px rgba(0,0,0,.25);
+    }
+</style>
+
+<div class="position-relative">
+    <div class="center">
+        <h1>
+            <i class="ace-icon fa fa-desktop blue"></i>
+            <span class="red">Sistema ERP</span>
+        </h1>
+    </div>
+
+    <div class="space-6"></div>
+
+    <div id="login-box" class="login-box visible widget-box no-border">
+        <div class="widget-body">
+            <div class="widget-main">
+                <h4 class="header blue lighter bigger">
+                    <i class="ace-icon fa fa-home blue"></i>
+                    Acceso al Sistema
+                </h4>
+
+                <div class="space-6"></div>
+
+                <form>
+                    <fieldset>
+                        <label class="block clearfix">
+                            <span class="block input-icon input-icon-right">
+                                <input type="text" class="form-control" placeholder="correo@dominio.com" />
+                                <i class="ace-icon fa fa-envelope"></i>
+                            </span>
+                        </label>
+
+                        <label class="block clearfix">
+                            <span class="block input-icon input-icon-right">
+                                <input type="password" class="form-control" placeholder="contraseña" />
+                                <i class="ace-icon fa fa-lock"></i>
+                            </span>
+                        </label>
+
+                        <div class="space"></div>
+
+                        <div class="clearfix">
+                            <button type="button" class="width-35 pull-right btn btn-sm btn-primary" id="btnEntrar">
+                                <i class="ace-icon fa fa-key"></i>
+                                <span class="bigger-110">Entrar</span>
+                            </button>
+                        </div>
+
+                        <div class="space-4"></div>
+                    </fieldset>
+                </form>
+            </div><!-- /.widget-main -->
+
+            <div class="toolbar clearfix">
+                <div>
+                    <a href="#" data-target="#forgot-box" class="forgot-password-link">
+                        <i class="ace-icon fa fa-arrow-left"></i>
+                        Recuperar mi contraseña
+                    </a>
+                </div>
+                
+            </div>
+        </div><!-- /.widget-body -->
+    </div><!-- /.login-box -->
+
+    <div id="forgot-box" class="forgot-box widget-box no-border">
+        <div class="widget-body">
+            <div class="widget-main">
+                <h4 class="header red lighter bigger">
+                    <i class="ace-icon fa fa-key"></i>
+                    Recuperar mi contraseña
+                </h4>
+
+                <div class="space-6"></div>
+                <p>
+                    Proporcione su correo electronico
+                </p>
+
+                <form>
+                    <fieldset>
+                        <label class="block clearfix">
+                            <span class="block input-icon input-icon-right">
+                                <input type="email" class="form-control" placeholder="correo@dominio.com" />
+                                <i class="ace-icon fa fa-envelope"></i>
+                            </span>
+                        </label>
+
+                        <div class="clearfix">
+                            <button type="button" class="width-35 pull-right btn btn-sm btn-danger">
+                                <i class="ace-icon fa fa-lightbulb-o"></i>
+                                <span class="bigger-110">Enviar</span>
+                            </button>
+                        </div>
+                    </fieldset>
+                </form>
+            </div><!-- /.widget-main -->
+
+            <div class="toolbar center">
+                <a href="#" data-target="#login-box" class="back-to-login-link">
+                    Regresar al loggin
+                    <i class="ace-icon fa fa-arrow-right"></i>
+                </a>
+            </div>
+        </div><!-- /.widget-body -->
+    </div><!-- /.forgot-box -->
+
+    <div class="center">
+        <h5 class="blue" id="id-company-text">&copy; @DateTime.Now.Year - Zapaterias El Reventon </h5>
+    </div>
+
+</div><!-- /.position-relative -->
+
