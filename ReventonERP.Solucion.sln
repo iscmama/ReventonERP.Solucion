@@ -5,6 +5,10 @@ VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReventonERP.Web", "ReventonERP.Web\ReventonERP.Web.csproj", "{C910FDA0-725B-4233-A475-84DDC092EFC3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReventonERP.Data", "ReventonERP.Data\ReventonERP.Data.csproj", "{FA1B8756-57DB-4AED-A855-025398270E8C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReventonERP.Business", "ReventonERP.Business\ReventonERP.Business.csproj", "{1771B929-C96A-4C92-9BED-56DCE66B2DE1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{C910FDA0-725B-4233-A475-84DDC092EFC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C910FDA0-725B-4233-A475-84DDC092EFC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C910FDA0-725B-4233-A475-84DDC092EFC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA1B8756-57DB-4AED-A855-025398270E8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA1B8756-57DB-4AED-A855-025398270E8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA1B8756-57DB-4AED-A855-025398270E8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA1B8756-57DB-4AED-A855-025398270E8C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1771B929-C96A-4C92-9BED-56DCE66B2DE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1771B929-C96A-4C92-9BED-56DCE66B2DE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1771B929-C96A-4C92-9BED-56DCE66B2DE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1771B929-C96A-4C92-9BED-56DCE66B2DE1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

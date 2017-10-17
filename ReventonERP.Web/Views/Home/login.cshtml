@@ -11,7 +11,7 @@
     }
 </style>
 
-<div class="position-relative">
+<div class="position-relative" ng-app="reventonERPApp" ng-controller="loginController" ng-cloak>
     <div class="center">
         <h1>
             <i class="ace-icon fa fa-desktop blue"></i>
@@ -31,18 +31,18 @@
 
                 <div class="space-6"></div>
 
-                <form>
+                <form id="loginForm" name="loginForm" ng-submit="login()">
                     <fieldset>
                         <label class="block clearfix">
                             <span class="block input-icon input-icon-right">
-                                <input type="text" class="form-control" placeholder="correo@dominio.com" />
+                                <input type="email" class="form-control" placeholder="correo@dominio.com" id="correo" ng-model="LoginModel.correo" maxlength="50" autofocus required />
                                 <i class="ace-icon fa fa-envelope"></i>
                             </span>
                         </label>
 
                         <label class="block clearfix">
                             <span class="block input-icon input-icon-right">
-                                <input type="password" class="form-control" placeholder="contraseña" />
+                                <input type="password" class="form-control" placeholder="contraseña" id="contrasena" ng-model="LoginModel.contrasena" maxlength="50" autofocus required />
                                 <i class="ace-icon fa fa-lock"></i>
                             </span>
                         </label>
@@ -50,7 +50,7 @@
                         <div class="space"></div>
 
                         <div class="clearfix">
-                            <button type="button" class="width-35 pull-right btn btn-sm btn-primary" id="btnEntrar">
+                            <button type="submit" class="width-35 pull-right btn btn-sm btn-primary" id="btnEntrar">
                                 <i class="ace-icon fa fa-key"></i>
                                 <span class="bigger-110">Entrar</span>
                             </button>
@@ -86,17 +86,17 @@
                     Proporcione su correo electronico
                 </p>
 
-                <form>
+                <form id="recoveryForm" name="recoveryForm" ng-submit="recuperarContrasena()">
                     <fieldset>
                         <label class="block clearfix">
                             <span class="block input-icon input-icon-right">
-                                <input type="email" class="form-control" placeholder="correo@dominio.com" />
+                                <input type="email" class="form-control" id="correoRecuperar" ng-model="RecoveryModel.contrasena" placeholder="correo@dominio.com" maxlength="50" autofocus required />
                                 <i class="ace-icon fa fa-envelope"></i>
                             </span>
                         </label>
 
                         <div class="clearfix">
-                            <button type="button" class="width-35 pull-right btn btn-sm btn-danger">
+                            <button type="submit" class="width-35 pull-right btn btn-sm btn-danger">
                                 <i class="ace-icon fa fa-lightbulb-o"></i>
                                 <span class="bigger-110">Enviar</span>
                             </button>
