@@ -16,5 +16,7 @@ namespace ReventonERP.Business.Seguridad
         public DateTime fechaAlta { get; set; }
         public int estatus { get; set; }
         public string rol { get; set; }
+
+        public string message { get; set; }
     }
 }

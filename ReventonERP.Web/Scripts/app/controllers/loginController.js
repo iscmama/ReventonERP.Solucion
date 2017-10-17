@@ -42,11 +42,13 @@
 
             securityFactory.autenticar($scope.LoginModel.correo, $scope.LoginModel.contrasena)
                 .then(function (data) {
-                    $log.info(data);
-                    $scope.authorizationData = { infoUser: data.Usuario, message: data.Message };
+                    $log.info(data.data);
+                    $sessionStorage.authorizationData = JSON.parse(data.data);
                     $scope.completed = true;
                 })
                 .catch(function (error) {
+
+                    $log.error(error);
 
                     if (error.data.status == 500) {
                         $scope.process = false;
@@ -66,8 +68,6 @@
             if ($scope.completed) {
                 $scope.process = false;
                 $scope.isDisabled = false;
-                $window.scrollTo(0, 0);
-                $sessionStorage.authorizationData = $scope.authorizationData;
                 $window.location.href = '/home/index';
             }
         });

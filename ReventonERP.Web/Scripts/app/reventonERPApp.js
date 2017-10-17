@@ -16,6 +16,11 @@
                 templateUrl: 'Views/Home/login.cshtml'
             })
 
+            .when('/home/index', {
+                controller: 'indexController',
+                templateUrl: 'Views/Home/Index.cshtml'
+            })
+
         $httpProvider.defaults.useXDomain = true;
         delete $httpProvider.defaults.headers.common['X-Requested-With'];
     }
@@ -23,7 +28,7 @@
     run.$inject = ['$rootScope', '$location', '$http'];
 
     function run($rootScope, $location, $http) {
-        $rootScope.AppTitle = "Zapaterias El Reventón App 1.0.0.0";
+        $rootScope.AppTitle = "Zapaterias El Reventón ERP 1.0.0.0";
         $rootScope.CurrentUser = {
             userName: 'Administrador',
             user_cve: 'admin',

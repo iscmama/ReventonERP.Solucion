@@ -1610,7 +1610,7 @@ pre.prettyprint {
     }
 
 .user-info {
-    max-width: 100px;
+    
     display: inline-block;
     overflow: hidden;
     text-overflow: ellipsis;

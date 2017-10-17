@@ -136,7 +136,7 @@
     </script>
    
 </head>
-<body class="skin-1">
+<body class="skin-1" ng-app="reventonERPApp" ng-controller="indexController" ng-cloak>
    
     <div id="navbar" class="navbar navbar-default          ace-save-state">
         <div class="navbar-container ace-save-state" id="navbar-container">
@@ -235,8 +235,8 @@
                         <a data-toggle="dropdown" href="#" class="dropdown-toggle">
                             <img class="nav-user-photo" src="assets/images/avatars/avatar.png" alt="foto" />
                             <span class="user-info">
-                                <small>Gabriel Peréz</small>
-                                Administrador
+                                <small>{{userInfo.nombreCompleto}}</small>
+                                {{userInfo.rol}}
                             </span>
 
                             <i class="ace-icon fa fa-caret-down"></i>

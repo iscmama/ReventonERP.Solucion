@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using ReventonERP.Data;
 using ReventonERP.Data.Seguridad;
 using ReventonERP.Business.Seguridad;
+using Newtonsoft.Json;
 
 namespace ReventonERP.Web.Controllers
 {
@@ -40,55 +41,26 @@ namespace ReventonERP.Web.Controllers
                     }
                 }
 
-                LoginDTO login = new LoginDTO()
+                UsuariosDTO login = new UsuariosDTO()
                 {
-                    Message = "success",
-                    Usuario = new UsuariosDTO()
-                    {
-                        idUsuario = user.idUsuario,
-                        idRol = user.idRol,
-                        correo = user.correo,
-                        nombreCompleto = user.nombres + " " + user.apPaterno + " " + user.apMaterno,
-                        fechaAlta = user.fechaAlta,
-                        estatus = user.estatus,
-                        rol = rol.rol
-                    }
+                    idUsuario = user.idUsuario,
+                    idRol = user.idRol,
+                    correo = user.correo,
+                    nombreCompleto = user.nombres + " " + user.apPaterno + " " + user.apMaterno,
+                    fechaAlta = user.fechaAlta,
+                    estatus = user.estatus,
+                    rol = rol.rol,
+                    message = "success"
                 };
 
-                return Ok(login);
+                string jsonLogin = JsonConvert.SerializeObject(login);
+
+                return Ok(jsonLogin);
             }
             catch (Exception ex)
             {
                 return InternalServerError(ex);
             }
-        }
-
-        [HttpPost]
-        [AllowAnonymous]
-        [Route("LoginUsuario")]
-        [EnableCors(origins: "*", headers: "*", methods: "*", exposedHeaders: "X-Custom-Header")]
-        public async Task<IHttpActionResult> LoginUsuario(string correo, string contrasena)
-        {
-            try
-            {
-                Usuarios user = null;
-
-                using (ReventonERPRepository _repo = new ReventonERPRepository())
-                {
-                    user = await _repo.LoginUsuarioAsync(correo, contrasena);
-
-                    if (user == null)
-                    {
-                        return InternalServerError(new Exception("Usuario / Contraseña incorrectos"));
-                    }
-                }
-
-                return Ok("success");
-            }
-            catch (Exception ex)
-            {
-                return InternalServerError(ex);
-            }
-        }
+        }       
     }
 }
