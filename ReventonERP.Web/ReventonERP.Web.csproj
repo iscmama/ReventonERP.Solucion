@@ -200,10 +200,12 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\OperationsController.cs" />
     <Compile Include="Controllers\SecurityController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\ReporteBancosModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -370,8 +372,10 @@
     <Content Include="Scripts\angular\angular-touch.min.js" />
     <Content Include="Scripts\angular\angular.js" />
     <Content Include="Scripts\angular\angular.min.js" />
+    <Content Include="Scripts\app\controllers\bancosController.js" />
     <Content Include="Scripts\app\controllers\indexController.js" />
     <Content Include="Scripts\app\controllers\loginController.js" />
+    <Content Include="Scripts\app\factories\operationsFactory.js" />
     <Content Include="Scripts\app\factories\securityFactory.js" />
     <Content Include="Scripts\app\reventonERPApp.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -1191,7 +1195,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

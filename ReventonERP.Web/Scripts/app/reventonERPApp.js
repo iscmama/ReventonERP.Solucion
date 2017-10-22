@@ -20,6 +20,16 @@
                 controller: 'indexController',
                 templateUrl: 'Views/Home/Index.cshtml'
             })
+             
+            .when('/home/bancos', {
+                controller: 'bancosController',
+                templateUrl: 'Views/Home/bancos.cshtml'
+            })
+
+            .when('#', {
+                controller: 'indexController',
+                templateUrl: 'Views/Home/index.cshtml'
+            })
 
         $httpProvider.defaults.useXDomain = true;
         delete $httpProvider.defaults.headers.common['X-Requested-With'];

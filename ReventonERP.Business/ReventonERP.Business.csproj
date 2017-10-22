@@ -40,6 +40,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Procesos\BancosDTO.cs" />
+    <Compile Include="Procesos\ReporteBancosDTO.cs" />
+    <Compile Include="Procesos\ResponseBancosDTO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Seguridad\LoginDTO.cs" />
     <Compile Include="Seguridad\RolesDTO.cs" />

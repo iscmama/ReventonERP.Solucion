@@ -11,7 +11,6 @@
         loadPage();
 
         function loadPage() {
-            $log.info($sessionStorage.authorizationData);
             $scope.userInfo = $sessionStorage.authorizationData;
         }
     }
