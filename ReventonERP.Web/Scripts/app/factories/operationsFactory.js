@@ -58,6 +58,40 @@
                 });
 
                 return defer.promise;
+            },
+            actualizarBancos: function (idBancos, numero, fechaPagoBanco, proveedor, referencia, fechaFacturaBanco, depositos, cargos, saldo, usuario, estatus) {
+                var temp = {};
+                var defer = $q.defer();
+                var apiUrlActualizarBancos = $rootScope.URLApis + 'Operations/actualizarbancos';
+
+                $log.info(fechaPagoBanco);
+                $log.info(fechaFacturaBanco);
+
+                var bancoModel = {
+                    idBancos: idBancos,
+                    numero: numero,
+                    fechaPago: fechaPagoBanco,
+                    proveedor: proveedor,
+                    referencia: referencia,
+                    fechaFactura: fechaFacturaBanco,
+                    depositos: depositos,
+                    cargos: cargos,
+                    saldo: saldo,
+                    fechaModificacion: new Date(),
+                    idUsuarioModificacion: usuario,
+                    estatus: estatus
+                };
+
+                var config = { headers: { 'Content-Type': 'application/json' } };
+
+                $http.post(apiUrlActualizarBancos, bancoModel, config).then(function (response) {
+                    defer.resolve(response);
+                }).catch(function (data, status, headers, config) {
+                    var error = { 'data': data, 'status': status, 'headers': headers, 'config': config };
+                    defer.reject(error);
+                });
+
+                return defer.promise;
             }
         };
     }

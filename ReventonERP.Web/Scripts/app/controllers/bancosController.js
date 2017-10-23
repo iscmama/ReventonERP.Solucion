@@ -69,6 +69,15 @@
 
                                     ],
 
+                                    columnDefs: [
+                                        { targets: [2, 5], render: function (data, type, row) { return moment(data).format("DD/MM/YYYY"); } },
+                                        {
+                                            targets: [6, 7, 8], render: function (data, type, row) {
+                                                return formatCurrency(data, true);
+                                            }
+                                        }
+                                    ],
+
                                     //"aoColumns": [
                                     //    { "bSortable": false },
                                     //    { "sName": "numero" },
@@ -209,8 +218,10 @@
                         //select/deselect a row when the checkbox is checked/unchecked
                         $('#dynamic-table').on('click', 'td input[type=checkbox]', function () {
                             var row = $(this).closest('tr').get(0);
-                            if (this.checked) $scope.myTable.row(row).deselect();
-                            else $scope.myTable.row(row).select();
+                            if (this.checked)
+                                $scope.myTable.row(row).deselect();
+                            else
+                                $scope.myTable.row(row).select();
                         });
 
                         $(document).on('click', '#dynamic-table .dropdown-toggle', function (e) {
@@ -266,13 +277,13 @@
                             $scope.banco = {
                                 idBancos: $scope.dataBanco.idBancos,
                                 numero: $scope.dataBanco.numero,
-                                fechaPago: $scope.dataBanco.fechaPago,
+                                fechaPagoBanco: moment($scope.dataBanco.fechaPago).format("DD/MM/YYYY"),
                                 proveedor: $scope.dataBanco.proveedor,
                                 referencia: $scope.dataBanco.referencia,
-                                fechaFactura: $scope.dataBanco.fechaFactura,
-                                depositos: $scope.dataBanco.depositos,
-                                cargos: $scope.dataBanco.cargos,
-                                saldo: $scope.dataBanco.saldo,
+                                fechaFacturaBanco: moment($scope.dataBanco.fechaFactura).format("DD/MM/YYYY"),
+                                depositos: formatCurrency($scope.dataBanco.depositos, false),
+                                cargos: formatCurrency($scope.dataBanco.cargos, false),
+                                saldo: formatCurrency($scope.dataBanco.saldo, false),
                                 fechaAlta: $scope.dataBanco.fechaAlta,
                                 idUsuarioAlta: $scope.dataBanco.idUsuarioAlta,
                                 fechaModificacion: $scope.dataBanco.fechaModificacion,
@@ -298,13 +309,13 @@
                             $scope.banco = {
                                 idBancos: $scope.dataBanco.idBancos,
                                 numero: $scope.dataBanco.numero,
-                                fechaPago: $scope.dataBanco.fechaPago,
+                                fechaPagoBanco: moment($scope.dataBanco.fechaPago).format("DD/MM/YYYY"),
                                 proveedor: $scope.dataBanco.proveedor,
                                 referencia: $scope.dataBanco.referencia,
-                                fechaFactura: $scope.dataBanco.fechaFactura,
-                                depositos: $scope.dataBanco.depositos,
-                                cargos: $scope.dataBanco.cargos,
-                                saldo: $scope.dataBanco.saldo,
+                                fechaFacturaBanco: moment($scope.dataBanco.fechaFactura).format("DD/MM/YYYY"),
+                                depositos: formatCurrency($scope.dataBanco.depositos, false),
+                                cargos: formatCurrency($scope.dataBanco.cargos, false),
+                                saldo: formatCurrency($scope.dataBanco.saldo, false),
                                 fechaAlta: $scope.dataBanco.fechaAlta,
                                 idUsuarioAlta: $scope.dataBanco.idUsuarioAlta,
                                 fechaModificacion: $scope.dataBanco.fechaModificacion,
@@ -312,6 +323,17 @@
                                 estatus: $scope.dataBanco.estatus
                             };
 
+                            $("#fechaPagoBanco").datepicker({
+                                showOtherMonths: true,
+                                selectOtherMonths: false,
+                                dateFormat: 'dd/mm/yy'
+                            });
+
+                            $("#fechaFacturaBanco").datepicker({
+                                showOtherMonths: true,
+                                selectOtherMonths: false,
+                                dateFormat: 'dd/mm/yy'
+                            });
 
                             $('#modalBanco').modal('show');
                             $scope.editarBanco = true;
@@ -553,7 +575,29 @@
 
             $('#modalPagos').modal('show');
             $('#numeroCheque').focus();
-            $scope.$apply();
+        }
+
+        $scope.actualizarBancos = function () {
+
+            operationsFactory.actualizarBancos($scope.banco.idBancos, $scope.banco.numero, $scope.banco.fechaPagoBanco, $scope.banco.proveedor, $scope.banco.referencia, $scope.banco.fechaFacturaBanco
+                , $scope.banco.depositos, $scope.banco.cargos, $scope.banco.saldo, $sessionStorage.authorizationData.idUsuario, 1)
+                .then(function (data) {
+                    $log.info(data.data);
+                    $scope.actualizado = true;
+                })
+                .catch(function (error) {
+
+                    $log.error(error);
+
+                    if (error.data.status == 400) {
+                        alert('No se pudo registrar el reporte. Intente más tarde');
+                        $scope.process = false;
+                        $scope.isDisabled = false;
+                    }
+
+                    full.resolve();
+                });
+
         }
 
         $scope.crearReporteFactura = function () {
@@ -580,14 +624,110 @@
                 });
         }
 
+        $scope.procesarDepositos = function (depositos) {
+
+            var dep = 0.00;
+            var car = 0.00;
+            var sal = 0.00;
+
+            dep = parseFloat(depositos);
+            car = parseFloat($scope.banco.cargos);
+            sal = dep + (-1 * car);
+
+            $scope.banco.saldo = formatCurrency(sal, false);
+        }
+
+        $scope.procesarCargos = function (cargos) {
+
+            var dep = 0.00;
+            var car = 0.00;
+            var sal = 0.00;
+
+            car = parseFloat(cargos);
+            dep = parseFloat($scope.banco.depositos);
+            sal = dep + (-1 * car);
+
+            $scope.banco.saldo = formatCurrency(sal, false);
+        }
+
+        $scope.procesarFechasBancos = function (e) {
+
+            var total = 0;
+            $scope.bancosFechasPagos = [];
+
+            $('#dynamic-table').find('tbody td input[type=checkbox]').each(function () {
+                if (this.checked) {
+                    total++;
+                    var row = $(this).closest('tr').get(0);
+                    $scope.itemBanco = $scope.myTable.row(row).data();
+                    $scope.bancosFechasPagos.push($scope.itemBanco.idBancos);
+                }
+            });
+
+            if (total == 0) {
+                alert('Debe seleccionar al menos 1 registro de banco para asignar fecha de pago');
+            }
+            else {
+                $log.info($scope.bancosFechasPagos);
+                $('#modalPagos').modal('hide');
+            }
+        }
+
         $scope.$watch('completed', function () {
             if ($scope.completed) {
                 $scope.process = false;
                 $scope.isDisabled = false;
-                alert('Reporte factura creadio de forma exitosa...');
+                alert('Reporte factura creado de forma exitosa...');
                 $('#modal-table').modal('hide');
                 $window.location.href = '/home/bancos';
             }
         });
+
+        $scope.$watch('actualizado', function () {
+            if ($scope.actualizado) {
+                $scope.process = false;
+                $scope.isDisabled = false;
+                alert('El registro de Bancos se actualizo de forma exitosa...');
+                $('#modalBanco').modal('hide');
+                $window.location.href = '/home/bancos';
+            }
+        });
+
+        $scope.$watch('sendDates', function () {
+            if ($scope.sendDates) {
+                $scope.process = false;
+                $scope.isDisabled = false;
+                alert('Las fechas de pago de los bancos se enviaron de forma exitosa...');
+                $('#modalPagos').modal('hide');
+                $window.location.href = '/home/bancos';
+            }
+        });
+
+        function formatCurrency(num, simbol) {
+            num = num.toString().replace(/\$|\,/g, '');
+            if (isNaN(num)) {
+                num = "0";
+            }
+
+            var sign = (num == (num = Math.abs(num)));
+            num = Math.floor(num * 100 + 0.50000000001);
+            var cents = num % 100;
+            num = Math.floor(num / 100).toString();
+
+            if (cents < 10) {
+                cents = "0" + cents;
+            }
+            for (var i = 0; i < Math.floor((num.length - (1 + i)) / 3); i++) {
+                num = num.substring(0, num.length - (4 * i + 3)) + ',' + num.substring(num.length - (4 * i + 3));
+            }
+
+            if (simbol) {
+                return (((sign) ? '' : '-') + '$' + num + '.' + cents);
+            }
+            else {
+                return (((sign) ? '' : '-') + num + '.' + cents);
+            }
+
+        }
     }
 })();

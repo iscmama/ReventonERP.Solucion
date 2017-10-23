@@ -116,5 +116,52 @@ namespace ReventonERP.Data
                 throw ex;
             }
         }
+        public async Task<int> UpdateBancoAsync(Bancos updateBanco)
+        {
+            try
+            {
+                var banco = await _context.Bancos.SingleAsync(b => b.idBancos == updateBanco.idBancos);
+
+                if (banco != null)
+                {
+                    updateBanco.fechaAlta = banco.fechaAlta;
+                    updateBanco.idUsuarioAlta = banco.idUsuarioAlta;
+
+                    _context.Entry<Bancos>(banco).CurrentValues.SetValues(updateBanco);
+                    return await _context.SaveChangesAsync();
+                }
+
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task<int> RemoveBancoAsync(string noCheque)
+        {
+            try
+            {
+                var reportes = (from r in _context.ReporteBancos
+                                      where r.noCheque == noCheque && r.estatus == 1
+                                      select r).AsEnumerable();
+
+                _context.ReporteBancos.RemoveRange(reportes);
+
+                var banco = await _context.Bancos.SingleAsync(b => b.numero == noCheque);
+
+                if (banco != null)
+                {
+                    _context.Bancos.Remove(banco);
+                    return await _context.SaveChangesAsync();
+                }
+
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }

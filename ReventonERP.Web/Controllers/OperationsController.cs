@@ -20,6 +20,7 @@ namespace ReventonERP.Web.Controllers
     [RoutePrefix("api/Operations")]
     public class OperationsController : ApiController
     {
+        [Route("registrarReporte")]
         [HttpPost]
         public async Task<IHttpActionResult> RegistrarReporte(ReporteBancosModel reporteBancoModel)
         {
@@ -91,6 +92,7 @@ namespace ReventonERP.Web.Controllers
                 return InternalServerError(ex);
             }
         }
+        [Route("obtenerbancos")]
         [HttpGet]
         public async Task<IHttpActionResult> ObtenerBancos()
         {
@@ -132,6 +134,49 @@ namespace ReventonERP.Web.Controllers
                 };
 
                 return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+        [Route("actualizarbancos")]
+        [HttpPost]
+        public async Task<IHttpActionResult> ActualizarBancos(BancosModel bancosModel)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                Bancos updateBancos = new Bancos()
+                {
+                    idBancos = bancosModel.idBancos,
+                    numero = bancosModel.numero,
+                    fechaPago = DateTime.ParseExact(bancosModel.fechaPago, "dd/MM/yyyy", new CultureInfo("es-MX")),
+                    proveedor = bancosModel.proveedor,
+                    referencia = bancosModel.referencia,
+                    fechaFactura = DateTime.ParseExact(bancosModel.fechaFactura, "dd/MM/yyyy", new CultureInfo("es-MX")),
+                    depositos = bancosModel.depositos,
+                    cargos = bancosModel.cargos,
+                    saldo = bancosModel.saldo,
+                    fechaModificacion = bancosModel.fechaModificacion,
+                    idUsuarioModificacion = bancosModel.idUsuarioModificacion,
+                    estatus = bancosModel.estatus
+                };
+
+                using (ReventonERPRepository _repo = new ReventonERPRepository())
+                {
+                    int result = await _repo.UpdateBancoAsync(updateBancos);
+
+                    if (result == 0)
+                    {
+                        return InternalServerError(new Exception("No se pudo actualizar el registro del Banco. Intente más tarde"));
+                    }
+                    return Ok("success");
+                }
             }
             catch (Exception ex)
             {

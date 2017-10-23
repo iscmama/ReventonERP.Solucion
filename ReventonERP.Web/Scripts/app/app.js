@@ -4,6 +4,8 @@
     angular.module('reventonERPApp', [
         'ngRoute',
         'ngResource',
-        'ngStorage'
+        'ngStorage',
+        'ng.deviceDetector',
+        'loadDisplay'
     ]);
 })();

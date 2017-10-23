@@ -319,23 +319,27 @@
     <div id="modalBanco" class="modal fade" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header no-padding">
-                    <div class="table-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-                            <span class="white">&times;</span>
-                        </button>
-                        Registro de Banco
-                    </div>
-                </div>
 
-                <div class="modal-body no-padding">
-                    <form class="form-horizontal" role="form">
+                <form class="form-horizontal" role="form" id="bancoForm" name="bancoForm" ng-submit="actualizarBancos()">
+
+
+                    <div class="modal-header no-padding">
+                        <div class="table-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                <span class="white">&times;</span>
+                            </button>
+                            Ver / Actualizar Bancos
+                        </div>
+                    </div>
+
+                    <div class="modal-body no-padding">
+
 
                         <div class="form-group">
                             <label class="col-sm-3 control-label no-padding-right" for="form-field-1">No Cheque </label>
 
                             <div class="col-sm-9">
-                                <input type="text" id="numero" placeholder="No Cheque" ng-model="banco.numero" ng-disabled="!editarBanco" />
+                                <input type="text" id="numero" placeholder="No Cheque" ng-model="banco.numero" ng-disabled="!editarBanco"  maxlength="50" autofocus required />
                             </div>
                         </div>
 
@@ -346,7 +350,7 @@
                                 <div class="row">
                                     <div class="col-sm-7">
                                         <div class="input-group">
-                                            <input class="form-control date-picker" id="fechaPago" type="text" data-date-format="dd-mm-yyyy" placeholder="dd/mm/yyyy" ng-model="banco.fechaPago" ng-disabled="!editarBanco" />
+                                            <input class="form-control date-picker" id="fechaPagoBanco" type="text" data-date-format="dd-mm-yyyy" placeholder="dd/mm/yyyy" ng-model="banco.fechaPagoBanco" ng-disabled="!editarBanco"  maxlength="10" autofocus required />
                                             <span class="input-group-addon">
                                                 <i class="fa fa-calendar bigger-110"></i>
                                             </span>
@@ -360,7 +364,7 @@
                             <label class="col-sm-3 control-label no-padding-right" for="proveedor">Proveedor </label>
 
                             <div class="col-sm-9">
-                                <input type="text" id="proveedor" placeholder="proveedor" class="col-xs-10" ng-model="banco.proveedor" ng-disabled="!editarBanco" />
+                                <input type="text" id="proveedor" placeholder="proveedor" class="col-xs-10" ng-model="banco.proveedor" ng-disabled="!editarBanco"  maxlength="300" autofocus required />
                             </div>
                         </div>
 
@@ -368,7 +372,7 @@
                             <label class="col-sm-3 control-label no-padding-right" for="form-field-1">Número Factura </label>
 
                             <div class="col-sm-9">
-                                <input type="text" id="referencia" placeholder="Número Factura" ng-model="banco.referencia" ng-disabled="!editarBanco" />
+                                <input type="text" id="referencia" placeholder="Número Factura" ng-model="banco.referencia" ng-disabled="!editarBanco"  maxlength="50" autofocus required />
                             </div>
 
                         </div>
@@ -380,7 +384,7 @@
                                 <div class="row">
                                     <div class="col-sm-7">
                                         <div class="input-group">
-                                            <input class="form-control date-picker" id="fechaFactura" type="text" data-date-format="dd-mm-yyyy" placeholder="dd/mm/yyy" ng-model="banco.fechaFactura" ng-disabled="!editarBanco" />
+                                            <input class="form-control date-picker" id="fechaFacturaBanco" type="text" data-date-format="dd-mm-yyyy" placeholder="dd/mm/yyyy" ng-model="banco.fechaFacturaBanco" ng-disabled="!editarBanco"  maxlength="10" autofocus required />
                                             <span class="input-group-addon">
                                                 <i class="fa fa-calendar bigger-110"></i>
                                             </span>
@@ -394,7 +398,7 @@
                             <label class="col-sm-3 control-label no-padding-right" for="form-field-2">Depositos</label>
 
                             <div class="col-sm-9">
-                                <input type="text" id="depositos" placeholder="Depositos" ng-model="banco.depositos" ng-disabled="!editarBanco"/>
+                                <input type="text" id="depositos" placeholder="Depositos" ng-model="banco.depositos" ng-disabled="!editarBanco" ng-blur="procesarDepositos(banco.depositos)"  maxlength="50" autofocus required />
                             </div>
                         </div>
 
@@ -402,7 +406,7 @@
                             <label class="col-sm-3 control-label no-padding-right" for="form-field-2">Cargos</label>
 
                             <div class="col-sm-9">
-                                <input type="text" id="cargos" placeholder="Cargos" ng-model="banco.cargos" ng-disabled="!editarBanco" />
+                                <input type="text" id="cargos" placeholder="Cargos" ng-model="banco.cargos" ng-disabled="!editarBanco" ng-blur="procesarCargos(banco.cargos)" maxlength="50" autofocus required />
                             </div>
                         </div>
 
@@ -410,7 +414,7 @@
                             <label class="col-sm-3 control-label no-padding-right" for="form-field-2">Saldo</label>
 
                             <div class="col-sm-9">
-                                <input type="text" id="saldo" placeholder="Saldo" ng-model="banco.saldo" ng-disabled="!editarBanco" />
+                                <input type="text" id="saldo" placeholder="Saldo" ng-model="banco.saldo" ng-disabled="!editarBanco"  maxlength="50" autofocus required />
                             </div>
                         </div>
 
@@ -418,27 +422,30 @@
                             <label class="col-sm-3 control-label no-padding-right" for="form-field-2">Estatus</label>
 
                             <div class="col-sm-9">
-                                <input type="text" id="form-field-2" placeholder="Estatus" ng-model="banco.estatus" ng-disabled="!editarBanco" />
+                                <input type="text" id="form-field-2" placeholder="Estatus" ng-model="banco.estatus" ng-disabled="!editarBanco"  maxlength="50" autofocus required />
                             </div>
                         </div>
 
-                    </form>
-                </div>
 
-                <div class="modal-footer no-margin-top">
+                    </div>
 
-                    <button class="btn btn-info pull-left" type="button" ng-hide="!editarBanco">
-                        <i class="ace-icon fa fa-check bigger-110"></i>
-                        Guardar
-                    </button>
+                    <div class="modal-footer no-margin-top">
 
-                    <button class="btn btn-default pull-right" data-dismiss="modal">
-                        <i class="ace-icon fa fa-times"></i>
-                        Salir
-                    </button>
+                        <button class="btn btn-info pull-left" type="submit" ng-hide="!editarBanco">
+                            <i class="ace-icon fa fa-check bigger-110"></i>
+                            Actualizar
+                        </button>
+
+                        <button class="btn btn-default pull-right" data-dismiss="modal">
+                            <i class="ace-icon fa fa-times"></i>
+                            Salir
+                        </button>
 
 
-                </div>
+                    </div>
+
+                </form>
+
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
     </div>
@@ -446,20 +453,17 @@
     <div id="modalPagos" class="modal fade" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header no-padding">
-                    <div class="table-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-                            <span class="white">&times;</span>
-                        </button>
-                        Asignar Fecha de Pago
+                <form class="form-horizontal" role="form" id="pagosForm" name="pagosForm" ng-submit="procesarFechasBancos()">
+                    <div class="modal-header no-padding">
+                        <div class="table-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                <span class="white">&times;</span>
+                            </button>
+                            Asignar Fecha de Pago
+                        </div>
                     </div>
-                </div>
 
-                <div class="modal-body no-padding">
-                    <form class="form-horizontal" role="form">
-
-
-
+                    <div class="modal-body no-padding">
                         <div class="form-group">
                             <label class="col-sm-3 control-label no-padding-right" for="form-field-1">Fecha Pago </label>
 
@@ -467,7 +471,7 @@
                                 <div class="row">
                                     <div class="col-sm-7">
                                         <div class="input-group">
-                                            <input class="form-control date-picker" id="fechaPagoAsigna" type="text" data-date-format="dd-mm-yyyy" placeholder="dd/mm/yyyy" ng-model="fechaPagoAsigna" />
+                                            <input class="form-control date-picker" id="fechaPagoAsigna" type="text" data-date-format="dd-mm-yyyy" placeholder="dd/mm/yyyy" ng-model="fechaPagoAsigna" maxlength="10" autofocus required />
                                             <span class="input-group-addon">
                                                 <i class="fa fa-calendar bigger-110"></i>
                                             </span>
@@ -476,26 +480,23 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+
+                    <div class="modal-footer no-margin-top">
+
+                        <button class="btn btn-danger pull-left" type="submit">
+                            <i class="ace-icon fa fa-check bigger-110"></i>
+                            Asignar Fecha Pago
+                        </button>
+
+                        <button class="btn btn-default pull-right" data-dismiss="modal">
+                            <i class="ace-icon fa fa-times"></i>
+                            Salir
+                        </button>
 
 
-
-                    </form>
-                </div>
-
-                <div class="modal-footer no-margin-top">
-
-                    <button class="btn btn-danger pull-left" type="button">
-                        <i class="ace-icon fa fa-check bigger-110"></i>
-                        Guardar
-                    </button>
-
-                    <button class="btn btn-default pull-right" data-dismiss="modal">
-                        <i class="ace-icon fa fa-times"></i>
-                        Salir
-                    </button>
-
-
-                </div>
+                    </div>
+                </form>             
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
     </div>
