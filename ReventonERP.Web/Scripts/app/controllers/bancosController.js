@@ -70,7 +70,7 @@
                                     ],
 
                                     columnDefs: [
-                                        { targets: [2, 5], render: function (data, type, row) { return moment(data).format("DD/MM/YYYY"); } },
+                                        { targets: [2, 5], render: function (data, type, row) { moment.locale('es'); var dateMoment = moment(data); return dateMoment.format("DD-MMM-YYYY").toUpperCase().replace('.', ''); } },
                                         {
                                             targets: [6, 7, 8], render: function (data, type, row) {
                                                 return formatCurrency(data, true);
@@ -113,6 +113,10 @@
 
                                     select: {
                                         style: 'multi'
+                                    },
+
+                                    "language": {
+                                        "url": "assets/js/Spanish.json"
                                     }
                                 });
 
@@ -343,7 +347,10 @@
 
                     }
                     else {
-                        $scope.myTable = $('#dynamic-table').DataTable({ destroy: true });
+                        $scope.myTable = $('#dynamic-table').DataTable({
+                            destroy: true, "language": {
+                                "url": "assets/js/Spanish.json"
+                            } });
                     }
 
                 })

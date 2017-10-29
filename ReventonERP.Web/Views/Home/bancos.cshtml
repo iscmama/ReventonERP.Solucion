@@ -1,6 +1,6 @@
 ﻿
 @{
-    ViewBag.Title = "bancos";
+    ViewBag.Title = "Bancos";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -372,7 +372,7 @@
                             <label class="col-sm-3 control-label no-padding-right" for="form-field-1">Número Factura </label>
 
                             <div class="col-sm-9">
-                                <input type="text" id="referencia" placeholder="Número Factura" ng-model="banco.referencia" ng-disabled="!editarBanco"  maxlength="50" autofocus required />
+                                <input type="text" id="referencia" placeholder="Número Factura" class="col-xs-10" ng-model="banco.referencia" ng-disabled="!editarBanco"  maxlength="500" autofocus required />
                             </div>
 
                         </div>

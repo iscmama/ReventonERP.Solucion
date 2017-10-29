@@ -11,6 +11,7 @@
     function config($routeProvider, $locationProvider, $httpProvider) {
 
         $routeProvider
+
             .when('/home/login', {
                 controller: 'loginController',
                 templateUrl: 'Views/Home/login.cshtml'
@@ -24,11 +25,6 @@
             .when('/home/bancos', {
                 controller: 'bancosController',
                 templateUrl: 'Views/Home/bancos.cshtml'
-            })
-
-            .when('#', {
-                controller: 'indexController',
-                templateUrl: 'Views/Home/index.cshtml'
             })
 
         $httpProvider.defaults.useXDomain = true;
