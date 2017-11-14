@@ -27,19 +27,19 @@
 
             <p></p>
 
-            <a role="button" data-toggle="modal" class="btn btn-app btn-primary" ng-click="nuevoReporteFactura()">
-                <i class="ace-icon fa fa-pencil-square-o bigger-230"></i>
-                Nuevo
-            </a>
-
-            <a href="#modalCarga" role="button" data-toggle="modal" class="btn btn-app btn-warning">
-                <i class="ace-icon fa fa-cloud-upload bigger-200"></i>
-                Carga
-            </a>
-
-            <a role="button" data-toggle="modal" class="btn btn-app btn-danger" ng-click="asignarFechaPago()">
-                <i class="ace-icon fa fa-calendar bigger-200"></i>
+            <a role="button" data-toggle="modal" class="btn btn-app btn-danger" ng-click="nuevoReporteFactura()">
+                <i class="ace-icon fa fa-shopping-cart bigger-200"></i>
                 Pagos
+            </a>
+
+            <a role="button" data-toggle="modal" class="btn btn-app btn-success" ng-click="nuevoDeposito()">
+                <i class="ace-icon fa fa-money bigger-200"></i>
+                Depositos
+            </a>
+
+            <a role="button" data-toggle="modal" class="btn btn-app btn-primary" ng-click="asignarFechaPago()">
+                <i class="ace-icon fa fa-calendar bigger-200"></i>
+                Fechas
             </a>
 
         </div>
@@ -78,16 +78,16 @@
                             </th>
                             <th class="hidden-480">Proveedor</th>
                             <th class="hidden-480">
-                                Referencia
+                                Numero Factura
                             </th>
                             <th class="hidden-480">
                                 <i class="ace-icon fa fa-clock-o bigger-110 hidden-480"></i>
                                 Fecha Factura
                             </th>
+                            <th class="hidden-480">Referencia</th>
                             <th class="hidden-480">Deposito</th>
                             <th class="hidden-480">Cargos</th>
                             <th class="hidden-480">Saldo</th>
-                            <th class="hidden-480">Estatus</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -109,7 +109,7 @@
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
                                 <span class="white">&times;</span>
                             </button>
-                            Registro de Reporte de Factura
+                            Registrar Pago
                         </div>
                     </div>
 
@@ -250,7 +250,7 @@
                     </div>
 
                     <div class="modal-footer no-margin-top">
-                        <button class="btn btn-info pull-left" type="submit">
+                        <button class="btn btn-danger pull-left" type="submit">
                             <i class="ace-icon fa fa-check bigger-110"></i>
                             Guardar
                         </button>
@@ -392,15 +392,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="col-sm-3 control-label no-padding-right" for="form-field-2">Depositos</label>
-
-                            <div class="col-sm-9">
-                                <input type="text" id="depositos" placeholder="Depositos" ng-model="banco.depositos" ng-disabled="!editarBanco" ng-blur="procesarDepositos(banco.depositos)"  maxlength="50" autofocus required />
-                            </div>
-                        </div>
+                        </div>                       
 
                         <div class="form-group">
                             <label class="col-sm-3 control-label no-padding-right" for="form-field-2">Cargos</label>
@@ -409,23 +401,6 @@
                                 <input type="text" id="cargos" placeholder="Cargos" ng-model="banco.cargos" ng-disabled="!editarBanco" ng-blur="procesarCargos(banco.cargos)" maxlength="50" autofocus required />
                             </div>
                         </div>
-
-                        <div class="form-group">
-                            <label class="col-sm-3 control-label no-padding-right" for="form-field-2">Saldo</label>
-
-                            <div class="col-sm-9">
-                                <input type="text" id="saldo" placeholder="Saldo" ng-model="banco.saldo" ng-disabled="!editarBanco"  maxlength="50" autofocus required />
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="col-sm-3 control-label no-padding-right" for="form-field-2">Estatus</label>
-
-                            <div class="col-sm-9">
-                                <input type="text" id="form-field-2" placeholder="Estatus" ng-model="banco.estatus" ng-disabled="!editarBanco"  maxlength="50" autofocus required />
-                            </div>
-                        </div>
-
 
                     </div>
 
@@ -507,4 +482,81 @@
             ¿Seguro que eliminara el registro?
         </p>
     </div>
+
+    <div id="modalDepositos" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form class="form-horizontal" role="form" id="reporteDepositoForm" name="reporteDepositoForm" ng-submit="registrarDepositos()">
+                    <div class="modal-header no-padding">
+                        <div class="table-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                <span class="white">&times;</span>
+                            </button>
+                            Registrar Déposito
+                        </div>
+                    </div>
+
+                    <div class="modal-body no-padding">
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right" for="form-field-1">Referencia </label>
+
+                            <div class="col-sm-9">
+                                <input type="text" id="referenciaDepo" placeholder="Referencia" class="col-xs-10" ng-model="reporteDeposito.referenciaDepositos" ng-disabled="!editarDeposito" maxlength="300" autofocus required />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right" for="form-field-1">Fecha Pago </label>
+
+                            <div class="col-sm-9">
+                                <div class="row">
+                                    <div class="col-sm-7">
+                                        <div class="input-group">
+                                            <input class="form-control date-picker" id="fechaPagoDepo" type="text" data-date-format="dd-mm-yyyy" placeholder="dd/mm/yyyy" ng-model="reporteDeposito.fechaPago" ng-disabled="!editarDeposito" maxlength="10" autofocus required />
+                                            <span class="input-group-addon">
+                                                <i class="fa fa-calendar bigger-110"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right" for="proveedor">Proveedor </label>
+
+                            <div class="col-sm-9">
+                                <input type="text" id="proveedorDepo" placeholder="Proveedor" class="col-xs-10" ng-model="reporteDeposito.proveedor" ng-disabled="!editarDeposito" maxlength="300" autofocus required />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right" for="form-field-2">Déposito</label>
+
+                            <div class="col-sm-9">
+                                <input type="text" id="depositos" placeholder="Depositos" ng-model="reporteDeposito.depositos" ng-disabled="!editarDeposito" maxlength="10" autofocus />
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                    <div class="modal-footer no-margin-top">
+                        <button class="btn btn-success pull-left" type="submit">
+                            <i class="ace-icon fa fa-check bigger-110"></i>
+                            Guardar
+                        </button>
+
+                        <button class="btn btn-default pull-right" data-dismiss="modal">
+                            <i class="ace-icon fa fa-times"></i>
+                            Salir
+                        </button>
+                    </div>
+                </form>
+
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+
 </div>

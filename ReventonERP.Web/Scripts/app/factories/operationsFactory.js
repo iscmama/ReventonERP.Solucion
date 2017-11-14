@@ -15,6 +15,7 @@
                 var apiUrlRegistrarReporteBancos = $rootScope.URLApis + 'Operations/registrarreporte';
 
                 var reporteBancoModel = {
+                    tipo: 1,
                     factura: factura,
                     fechaFactura: fechaFactura,
                     noCheque: noCheque,
@@ -59,7 +60,7 @@
 
                 return defer.promise;
             },
-            actualizarBancos: function (idBancos, numero, fechaPagoBanco, proveedor, referencia, fechaFacturaBanco, depositos, cargos, saldo, usuario, estatus) {
+            actualizarBancos: function (idBancos, numero, fechaPagoBanco, proveedor, numeroFactura, fechaFacturaBanco, cargos, usuario) {
                 var temp = {};
                 var defer = $q.defer();
                 var apiUrlActualizarBancos = $rootScope.URLApis + 'Operations/actualizarbancos';
@@ -69,17 +70,14 @@
 
                 var bancoModel = {
                     idBancos: idBancos,
-                    numero: numero,
+                    tipo: 1,
+                    numeroCheque: numero,
                     fechaPago: fechaPagoBanco,
                     proveedor: proveedor,
-                    referencia: referencia,
+                    numeroFactura: numeroFactura,
                     fechaFactura: fechaFacturaBanco,
-                    depositos: depositos,
                     cargos: cargos,
-                    saldo: saldo,
-                    fechaModificacion: new Date(),
                     idUsuarioModificacion: usuario,
-                    estatus: estatus
                 };
 
                 var config = { headers: { 'Content-Type': 'application/json' } };
@@ -92,7 +90,38 @@
                 });
 
                 return defer.promise;
+            },
+
+            registrardeposito: function (idBancos, referenciaDepositos, fechaPago, proveedor, depositos, usuario) {
+                var temp = {};
+                var defer = $q.defer();
+                var apiUrlRegistrarDepositos = $rootScope.URLApis + 'Operations/registrardeposito';
+
+                var reporteBancoModel = {
+                    idBancos: idBancos,
+                    tipo: 2,
+                    referenciaDepositos: referenciaDepositos,
+                    fechaPago: fechaPago,
+                    proveedor: proveedor,
+                    depositos: depositos,
+                    idUsuarioAlta: usuario,
+                    idUsuarioModificacion: usuario,
+                    estatus: 1
+                };
+
+                var config = { headers: { 'Content-Type': 'application/json' } };
+
+                $http.post(apiUrlRegistrarDepositos, reporteBancoModel, config).then(function (response) {
+                    defer.resolve(response);
+                }).catch(function (data, status, headers, config) {
+                    var error = { 'data': data, 'status': status, 'headers': headers, 'config': config };
+                    defer.reject(error);
+                });
+
+                return defer.promise;
+
             }
+
         };
     }
 })();

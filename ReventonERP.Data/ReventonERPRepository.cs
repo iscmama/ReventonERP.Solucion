@@ -96,6 +96,7 @@ namespace ReventonERP.Data
             {
                 return await (from b in _context.Bancos
                               where b.estatus == 1
+                              orderby b.fechaPago
                               select b).ToListAsync<Bancos>();
             }
             catch (Exception ex)
@@ -148,13 +149,43 @@ namespace ReventonERP.Data
 
                 _context.ReporteBancos.RemoveRange(reportes);
 
-                var banco = await _context.Bancos.SingleAsync(b => b.numero == noCheque);
+                var banco = await _context.Bancos.SingleAsync(b => b.numeroCheque == noCheque);
 
                 if (banco != null)
                 {
                     _context.Bancos.Remove(banco);
                     return await _context.SaveChangesAsync();
                 }
+
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task<int> RegisterBancoAsync(Bancos bancoAdd)
+        {
+            try
+            {
+                if (bancoAdd.idBancos > 0)
+                {
+                    var banco = await _context.Bancos.SingleAsync(b => b.idBancos == bancoAdd.idBancos);
+
+                    if (banco != null)
+                    {
+                        bancoAdd.fechaAlta = banco.fechaAlta;
+                        bancoAdd.idUsuarioAlta = banco.idUsuarioAlta;
+
+                        _context.Entry<Bancos>(banco).CurrentValues.SetValues(bancoAdd);
+                        return await _context.SaveChangesAsync();
+                    }
+                }
+                else
+                {
+                    var bancoNew = _context.Bancos.Add(bancoAdd);
+                    return await _context.SaveChangesAsync();
+                }                
 
                 return 0;
             }

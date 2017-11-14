@@ -63,12 +63,14 @@ namespace ReventonERP.Web.Controllers
 
                     Bancos newBanco = new Bancos()
                     {
-                        numero = newReporte.noCheque,
+                        tipo = 1,
+                        numeroCheque = newReporte.noCheque,
                         fechaPago = newReporte.fechaPago,
                         proveedor = newReporte.proveedor,
-                        referencia = newReporte.factura,
+                        numeroFactura = newReporte.factura,
                         fechaFactura = newReporte.fechaFactura,
-                        saldo = 0.00m,
+                        referenciaDepositos = string.Empty,
+                        depositos = 0.00m,
                         cargos = 0.00m - newReporte.total,
                         fechaAlta = newReporte.fechaAlta,
                         idUsuarioAlta = newReporte.idUsuarioAlta,
@@ -104,19 +106,25 @@ namespace ReventonERP.Web.Controllers
                 {
                     List<Bancos> bancos = await _repo.GetBancosAllAsync();
 
+                    decimal saldo = 0.00m;
+
                     foreach (Bancos ban in bancos)
                     {
+                        saldo = saldo + (ban.depositos - ban.cargos);
+
                         listBancos.Add(new BancosDTO()
                         {
                             idBancos = ban.idBancos,
-                            numero = ban.numero,
+                            tipo = ban.tipo,
+                            numeroCheque = ban.numeroCheque,
                             fechaPago = ban.fechaPago,
                             proveedor = ban.proveedor,
-                            referencia = ban.referencia,
+                            numeroFactura = ban.numeroFactura,
                             fechaFactura = ban.fechaFactura,
+                            referenciaDepositos = ban.referenciaDepositos,
                             depositos = ban.depositos,
                             cargos = ban.cargos,
-                            saldo = ban.saldo,
+                            saldo = saldo,
                             fechaAlta = ban.fechaAlta,
                             idUsuarioAlta = ban.idUsuarioAlta,
                             fechaModificacion = ban.fechaModificacion,
@@ -151,29 +159,30 @@ namespace ReventonERP.Web.Controllers
                     return BadRequest(ModelState);
                 }
 
-                Bancos updateBancos = new Bancos()
+                Bancos updatePago = new Bancos()
                 {
                     idBancos = bancosModel.idBancos,
-                    numero = bancosModel.numero,
+                    tipo = 1,
+                    numeroCheque = bancosModel.numeroCheque,
                     fechaPago = DateTime.ParseExact(bancosModel.fechaPago, "dd/MM/yyyy", new CultureInfo("es-MX")),
                     proveedor = bancosModel.proveedor,
-                    referencia = bancosModel.referencia,
+                    numeroFactura = bancosModel.numeroFactura,
                     fechaFactura = DateTime.ParseExact(bancosModel.fechaFactura, "dd/MM/yyyy", new CultureInfo("es-MX")),
-                    depositos = bancosModel.depositos,
+                    referenciaDepositos = string.Empty,
+                    depositos = 0.00m,
                     cargos = bancosModel.cargos,
-                    saldo = bancosModel.saldo,
-                    fechaModificacion = bancosModel.fechaModificacion,
+                    fechaModificacion = new DateTime(),
                     idUsuarioModificacion = bancosModel.idUsuarioModificacion,
-                    estatus = bancosModel.estatus
+                    estatus = 1
                 };
 
                 using (ReventonERPRepository _repo = new ReventonERPRepository())
                 {
-                    int result = await _repo.UpdateBancoAsync(updateBancos);
+                    int result = await _repo.UpdateBancoAsync(updatePago);
 
                     if (result == 0)
                     {
-                        return InternalServerError(new Exception("No se pudo actualizar el registro del Banco. Intente más tarde"));
+                        return InternalServerError(new Exception("No se pudo actualizar el pago. Intente más tarde"));
                     }
                     return Ok("success");
                 }
@@ -183,5 +192,48 @@ namespace ReventonERP.Web.Controllers
                 return InternalServerError(ex);
             }
         }
+        [Route("registrardeposito")]
+        [HttpPost]
+        public async Task<IHttpActionResult> RegistrarDeposito(BancosModel bancosModel)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                Bancos newDeposito = new Bancos()
+                {
+                    idBancos = bancosModel.idBancos,
+                    tipo = 2,
+                    fechaPago = DateTime.ParseExact(bancosModel.fechaPago, "dd/MM/yyyy", new CultureInfo("es-MX")),
+                    proveedor = bancosModel.proveedor,
+                    referenciaDepositos = bancosModel.referenciaDepositos,
+                    depositos = bancosModel.depositos,
+                    fechaAlta = DateTime.Now,
+                    idUsuarioAlta = bancosModel.idUsuarioAlta,
+                    fechaModificacion = DateTime.Now,
+                    idUsuarioModificacion = bancosModel.idUsuarioModificacion,
+                    estatus = 1,
+                };
+
+                using (ReventonERPRepository _repo = new ReventonERPRepository())
+                {
+                    int result = await _repo.RegisterBancoAsync(newDeposito);
+
+                    if (result == 0)
+                    {
+                        return InternalServerError(new Exception("No se pudo registrar el deposito. Intente más tarde"));
+                    }
+
+                    return Ok("success");
+                }
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }       
     }
 }

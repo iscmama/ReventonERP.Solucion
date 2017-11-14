@@ -15,6 +15,7 @@
 
             $scope.banco = {};
             $scope.editarBanco = false;
+            $scope.editarDeposito = false;
             $scope.fechaPagoAsigna = null;
 
             $scope.reporteFactura = {
@@ -34,9 +35,18 @@
                 total: ''
             };
 
+            $scope.reporteDeposito = {
+                fechaPago: null,
+                proveedor: '',
+                referenciaDepositos: '',
+                depositos: ''
+            };
+
             operationsFactory.obtenerBancos()
                 .then(function (data) {
                     $scope.bancos = data;
+
+                    $log.info($scope.bancos.data.Bancos);
 
                     if ($scope.bancos.data.Bancos.length > 0) {
 
@@ -46,21 +56,20 @@
                                 .DataTable({
                                     bAutoWidth: false,
 
-
                                     data: $scope.bancos.data.Bancos,
                                     columns: [
 
                                         { defaultContent: '<label class="pos-rel"><input type="checkbox" class="ace" /><span class="lbl"></span></label>', bSortable: 'false' },
 
-                                        { data: "numero" },
+                                        { data: "numeroCheque" },
                                         { data: "fechaPago" },
                                         { data: "proveedor" },
-                                        { data: "referencia" },
+                                        { data: "numeroFactura" },
                                         { data: "fechaFactura" },
+                                        { data: "referenciaDepositos" },
                                         { data: "depositos" },
                                         { data: "cargos" },
                                         { data: "saldo" },
-                                        { data: "estatus" },
 
                                         {
                                             defaultContent: '<div class="hidden-sm hidden-xs action-buttons"><a class="blue" href="#" id="btnVerBanco"><i class="ace-icon fa fa-search-plus bigger-130"></i> </a><a class="green" href="#" id="btnEditarBanco"><i class="ace-icon fa fa-pencil bigger-130"></i> </a> <a class="red" href="#" id="id-btn-dialog2"><i class="ace-icon fa fa-trash-o bigger-130"></i> </a> </div>' +
@@ -70,9 +79,21 @@
                                     ],
 
                                     columnDefs: [
-                                        { targets: [2, 5], render: function (data, type, row) { moment.locale('es'); var dateMoment = moment(data); return dateMoment.format("DD-MMM-YYYY").toUpperCase().replace('.', ''); } },
                                         {
-                                            targets: [6, 7, 8], render: function (data, type, row) {
+                                            targets: [2, 5], render: function (data, type, row) {
+
+                                                if (data != null) {
+                                                    moment.locale('es');
+                                                    var dateMoment = moment(data);
+                                                    return dateMoment.format("DD-MMM-YYYY").toUpperCase().replace('.', '');
+                                                }
+                                                else {
+                                                    return '';
+                                                }                                                
+                                            }
+                                        },
+                                        {
+                                            targets: [7, 8, 9], render: function (data, type, row) {
                                                 return formatCurrency(data, true);
                                             }
                                         }
@@ -275,30 +296,60 @@
                             e.stopPropagation();
                             e.preventDefault();
 
+                            $("#fechaPagoBanco").datepicker({
+                                showOtherMonths: true,
+                                selectOtherMonths: false,
+                                dateFormat: 'dd/mm/yy'
+                            });
+
+                            $("#fechaFacturaBanco").datepicker({
+                                showOtherMonths: true,
+                                selectOtherMonths: false,
+                                dateFormat: 'dd/mm/yy'
+                            });
+
                             var row = $(this).parents('tr')[0];
                             $scope.dataBanco = $scope.myTable.row(row).data();
 
-                            $scope.banco = {
-                                idBancos: $scope.dataBanco.idBancos,
-                                numero: $scope.dataBanco.numero,
-                                fechaPagoBanco: moment($scope.dataBanco.fechaPago).format("DD/MM/YYYY"),
-                                proveedor: $scope.dataBanco.proveedor,
-                                referencia: $scope.dataBanco.referencia,
-                                fechaFacturaBanco: moment($scope.dataBanco.fechaFactura).format("DD/MM/YYYY"),
-                                depositos: formatCurrency($scope.dataBanco.depositos, false),
-                                cargos: formatCurrency($scope.dataBanco.cargos, false),
-                                saldo: formatCurrency($scope.dataBanco.saldo, false),
-                                fechaAlta: $scope.dataBanco.fechaAlta,
-                                idUsuarioAlta: $scope.dataBanco.idUsuarioAlta,
-                                fechaModificacion: $scope.dataBanco.fechaModificacion,
-                                idUsuarioModificacion: $scope.dataBanco.idUsuarioModificacion,
-                                estatus: $scope.dataBanco.estatus
-                            };
+                            if ($scope.dataBanco.tipo == 1) {
+                                $scope.banco = {
+                                    idBancos: $scope.dataBanco.idBancos,
+                                    numero: $scope.dataBanco.numeroCheque,
+                                    fechaPagoBanco: moment($scope.dataBanco.fechaPago).format("DD/MM/YYYY"),
+                                    proveedor: $scope.dataBanco.proveedor,
+                                    referencia: $scope.dataBanco.numeroFactura,
+                                    fechaFacturaBanco: moment($scope.dataBanco.fechaFactura).format("DD/MM/YYYY"),
+                                    depositos: formatCurrency($scope.dataBanco.depositos, false),
+                                    cargos: formatCurrency($scope.dataBanco.cargos, false),
+                                    saldo: formatCurrency($scope.dataBanco.saldo, false),
+                                    fechaAlta: $scope.dataBanco.fechaAlta,
+                                    idUsuarioAlta: $scope.dataBanco.idUsuarioAlta,
+                                    fechaModificacion: $scope.dataBanco.fechaModificacion,
+                                    idUsuarioModificacion: $scope.dataBanco.idUsuarioModificacion,
+                                    estatus: $scope.dataBanco.estatus
+                                };
 
-                            $('#modalBanco').modal('show');
-                            $scope.editarBanco = false;
-                            $('#numero').focus();
-                            $scope.$apply();
+                                $('#modalBanco').modal('show');
+                                $scope.editarBanco = false;
+                                $('#numero').focus();
+                                $scope.$apply();
+                            }
+                            else {
+                                $scope.reporteDeposito = {
+                                    idBancos: $scope.dataBanco.idBancos,
+                                    fechaPago: moment($scope.dataBanco.fechaPago).format("DD/MM/YYYY"),
+                                    proveedor: $scope.dataBanco.proveedor,
+                                    referenciaDepositos: $scope.dataBanco.referenciaDepositos,
+                                    depositos: formatCurrency($scope.dataBanco.depositos, false),
+                                };
+
+                                $('#modalDepositos').modal('show');
+                                $scope.editarDeposito = false;
+                                $('#referenciaDepo').focus();
+                                $scope.$apply();
+                            }
+
+                      
                         });
 
                         $('#dynamic-table').on('click', '#btnEditarBanco', function (e) {
@@ -309,23 +360,6 @@
                             e.stopImmediatePropagation();
                             e.stopPropagation();
                             e.preventDefault();
-
-                            $scope.banco = {
-                                idBancos: $scope.dataBanco.idBancos,
-                                numero: $scope.dataBanco.numero,
-                                fechaPagoBanco: moment($scope.dataBanco.fechaPago).format("DD/MM/YYYY"),
-                                proveedor: $scope.dataBanco.proveedor,
-                                referencia: $scope.dataBanco.referencia,
-                                fechaFacturaBanco: moment($scope.dataBanco.fechaFactura).format("DD/MM/YYYY"),
-                                depositos: formatCurrency($scope.dataBanco.depositos, false),
-                                cargos: formatCurrency($scope.dataBanco.cargos, false),
-                                saldo: formatCurrency($scope.dataBanco.saldo, false),
-                                fechaAlta: $scope.dataBanco.fechaAlta,
-                                idUsuarioAlta: $scope.dataBanco.idUsuarioAlta,
-                                fechaModificacion: $scope.dataBanco.fechaModificacion,
-                                idUsuarioModificacion: $scope.dataBanco.idUsuarioModificacion,
-                                estatus: $scope.dataBanco.estatus
-                            };
 
                             $("#fechaPagoBanco").datepicker({
                                 showOtherMonths: true,
@@ -339,10 +373,44 @@
                                 dateFormat: 'dd/mm/yy'
                             });
 
-                            $('#modalBanco').modal('show');
-                            $scope.editarBanco = true;
-                            $('#numero').focus();
-                            $scope.$apply();
+                            if ($scope.dataBanco.tipo == 1) {
+                                $scope.banco = {
+                                    idBancos: $scope.dataBanco.idBancos,
+                                    numero: $scope.dataBanco.numeroCheque,
+                                    fechaPagoBanco: moment($scope.dataBanco.fechaPago).format("DD/MM/YYYY"),
+                                    proveedor: $scope.dataBanco.proveedor,
+                                    referencia: $scope.dataBanco.numeroFactura,
+                                    fechaFacturaBanco: moment($scope.dataBanco.fechaFactura).format("DD/MM/YYYY"),
+                                    depositos: formatCurrency($scope.dataBanco.depositos, false),
+                                    cargos: formatCurrency($scope.dataBanco.cargos, false),
+                                    saldo: formatCurrency($scope.dataBanco.saldo, false),
+                                    fechaAlta: $scope.dataBanco.fechaAlta,
+                                    idUsuarioAlta: $scope.dataBanco.idUsuarioAlta,
+                                    fechaModificacion: $scope.dataBanco.fechaModificacion,
+                                    idUsuarioModificacion: $scope.dataBanco.idUsuarioModificacion,
+                                    estatus: $scope.dataBanco.estatus
+                                };
+
+                                $('#modalBanco').modal('show');
+                                $scope.editarBanco = true;
+                                $('#numero').focus();
+                                $scope.$apply();
+                            }
+                            else {
+                                $scope.reporteDeposito = {
+                                    idBancos: $scope.dataBanco.idBancos,
+                                    fechaPago: moment($scope.dataBanco.fechaPago).format("DD/MM/YYYY"),
+                                    proveedor: $scope.dataBanco.proveedor,
+                                    referenciaDepositos: $scope.dataBanco.referenciaDepositos,
+                                    depositos: formatCurrency($scope.dataBanco.depositos, false),
+                                };
+
+                                $('#modalDepositos').modal('show');
+                                $scope.editarDeposito = true;
+                                $('#referenciaDepo').focus();
+                                $scope.$apply();
+                            }
+                            
                         });
 
                     }
@@ -378,133 +446,12 @@
                 dateFormat: 'dd/mm/yy'
             });
 
-            $('#id-input-file-1 , #id-input-file-2').ace_file_input({
-                no_file: 'Sin archivo ...',
-                btn_choose: 'Subir',
-                btn_change: 'Cambiar',
-                droppable: false,
-                onchange: null,
-                thumbnail: false, //| true | large
-                whitelist: 'xls|xlsx'
-                //blacklist:'exe|php'
-                //onchange:''
-                //
-            });
-            //pre-show a file name, for example a previously selected file
-            //$('#id-input-file-1').ace_file_input('show_file_list', ['myfile.txt'])
-
-
-            $('#id-input-file-3').ace_file_input({
-                style: 'well',
-                btn_choose: 'Coloque el archivo aquí o haga clic para elegir',
-                btn_change: null,
-                no_icon: 'ace-icon fa fa-cloud-upload',
-                droppable: true,
-                thumbnail: 'small'//large | fit
-                //,icon_remove:null//set null, to hide remove/reset button
-                /**,before_change:function(files, dropped) {
-                    //Check an example below
-                    //or examples/file-upload.html
-                    return true;
-                }*/
-                /**,before_remove : function() {
-                    return true;
-                }*/
-                ,
-                preview_error: function (filename, error_code) {
-                    //name of the file that failed
-                    //error_code values
-                    //1 = 'FILE_LOAD_FAILED',
-                    //2 = 'IMAGE_LOAD_FAILED',
-                    //3 = 'THUMBNAIL_FAILED'
-                    //alert(error_code);
-                }
-
-            }).on('change', function () {
-                //console.log($(this).data('ace_input_files'));
-                //console.log($(this).data('ace_input_method'));
-            });
-
-            //$('#id-input-file-3')
-            //.ace_file_input('show_file_list', [
-            //{type: 'image', name: 'name of image', path: 'http://path/to/image/for/preview'},
-            //{type: 'file', name: 'hello.txt'}
-            //]);
-
-            //dynamically change allowed formats by changing allowExt && allowMime function
-            $('#id-file-format').removeAttr('checked').on('change', function () {
-                var whitelist_ext, whitelist_mime;
-                var btn_choose
-                var no_icon
-                if (this.checked) {
-                    btn_choose = "Drop images here or click to choose";
-                    no_icon = "ace-icon fa fa-picture-o";
-
-                    whitelist_ext = ["jpeg", "jpg", "png", "gif", "bmp"];
-                    whitelist_mime = ["image/jpg", "image/jpeg", "image/png", "image/gif", "image/bmp"];
-                }
-                else {
-                    btn_choose = "Drop files here or click to choose";
-                    no_icon = "ace-icon fa fa-cloud-upload";
-
-                    whitelist_ext = null;//all extensions are acceptable
-                    whitelist_mime = null;//all mimes are acceptable
-                }
-                var file_input = $('#id-input-file-3');
-                file_input
-                    .ace_file_input('update_settings',
-                    {
-                        'btn_choose': btn_choose,
-                        'no_icon': no_icon,
-                        'allowExt': whitelist_ext,
-                        'allowMime': whitelist_mime
-                    })
-                file_input.ace_file_input('reset_input');
-
-                file_input
-                    .off('file.error.ace')
-                    .on('file.error.ace', function (e, info) {
-                        //console.log(info.file_count);//number of selected files
-                        //console.log(info.invalid_count);//number of invalid files
-                        //console.log(info.error_list);//a list of errors in the following format
-
-                        //info.error_count['ext']
-                        //info.error_count['mime']
-                        //info.error_count['size']
-
-                        //info.error_list['ext']  = [list of file names with invalid extension]
-                        //info.error_list['mime'] = [list of file names with invalid mimetype]
-                        //info.error_list['size'] = [list of file names with invalid size]
-
-
-                        /**
-                        if( !info.dropped ) {
-                            //perhapse reset file field if files have been selected, and there are invalid files among them
-                            //when files are dropped, only valid files will be added to our file array
-                            e.preventDefault();//it will rest input
-                        }
-                        */
-
-
-                        //if files have been selected (not dropped), you can choose to reset input
-                        //because browser keeps all selected files anyway and this cannot be changed
-                        //we can only reset file field to become empty again
-                        //on any case you still should check files with your server side script
-                        //because any arbitrary file can be uploaded by user and it's not safe to rely on browser-side measures
-                    });
-
-
-                /**
-                file_input
-                .off('file.preview.ace')
-                .on('file.preview.ace', function(e, info) {
-                    console.log(info.file.width);
-                    console.log(info.file.height);
-                    e.preventDefault();//to prevent preview
-                });
-                */
-
-            });
+            $("#fechaPagoDepo").datepicker({
+                showOtherMonths: true,
+                selectOtherMonths: false,
+                dateFormat: 'dd/mm/yy'
+            });  
+        
 
             //override dialog's title function to allow for HTML titles
             $.widget("ui.dialog", $.extend({}, $.ui.dialog.prototype, {
@@ -567,7 +514,21 @@
                 total: ''
             };
             $('#modal-table').modal('show');
-            $('#numeroCheque').focus();
+            $('#numero').focus();
+        }
+
+        $scope.nuevoDeposito = function () {
+            $scope.reporteDeposito = {
+                idBancos: 0,
+                fechaPago: null,
+                proveedor: '',
+                referenciaDepositos: '',
+                depositos: ''
+            };
+
+            $scope.editarDeposito = true;
+            $('#modalDepositos').modal('show');
+            $('#referenciaDepo').focus();
         }
 
         $scope.asignarFechaPago = function () {
@@ -581,13 +542,13 @@
             });
 
             $('#modalPagos').modal('show');
-            $('#numeroCheque').focus();
+            $('#numero').focus();
         }
 
         $scope.actualizarBancos = function () {
 
             operationsFactory.actualizarBancos($scope.banco.idBancos, $scope.banco.numero, $scope.banco.fechaPagoBanco, $scope.banco.proveedor, $scope.banco.referencia, $scope.banco.fechaFacturaBanco
-                , $scope.banco.depositos, $scope.banco.cargos, $scope.banco.saldo, $sessionStorage.authorizationData.idUsuario, 1)
+                ,$scope.banco.cargos, $sessionStorage.authorizationData.idUsuario)
                 .then(function (data) {
                     $log.info(data.data);
                     $scope.actualizado = true;
@@ -597,7 +558,7 @@
                     $log.error(error);
 
                     if (error.data.status == 400) {
-                        alert('No se pudo registrar el reporte. Intente más tarde');
+                        alert('No se pudo actualizar la información de bancos. Intente más tarde');
                         $scope.process = false;
                         $scope.isDisabled = false;
                     }
@@ -623,6 +584,27 @@
 
                     if (error.data.status == 400) {
                         alert('No se pudo registrar el reporte. Intente más tarde');
+                        $scope.process = false;
+                        $scope.isDisabled = false;
+                    }
+
+                    full.resolve();
+                });
+        }
+
+        $scope.registrarDepositos = function () {
+
+            operationsFactory.registrardeposito($scope.reporteDeposito.idBancos, $scope.reporteDeposito.referenciaDepositos, $('#fechaPagoDepo').val(), $scope.reporteDeposito.proveedor, $scope.reporteDeposito.depositos, $sessionStorage.authorizationData.idUsuario)
+                .then(function (data) {
+                    $log.info(data.data);
+                    $scope.completedDeposito = true;
+                })
+                .catch(function (error) {
+
+                    $log.error(error);
+
+                    if (error.data.status == 400) {
+                        alert('No se pudo registrar el deposito. Intente más tarde');
                         $scope.process = false;
                         $scope.isDisabled = false;
                     }
@@ -684,7 +666,7 @@
             if ($scope.completed) {
                 $scope.process = false;
                 $scope.isDisabled = false;
-                alert('Reporte factura creado de forma exitosa...');
+                alert('Pago registrado de forma exitosa...');
                 $('#modal-table').modal('hide');
                 $window.location.href = '/home/bancos';
             }
@@ -706,6 +688,16 @@
                 $scope.isDisabled = false;
                 alert('Las fechas de pago de los bancos se enviaron de forma exitosa...');
                 $('#modalPagos').modal('hide');
+                $window.location.href = '/home/bancos';
+            }
+        });
+
+        $scope.$watch('completedDeposito', function () {
+            if ($scope.completedDeposito) {
+                $scope.process = false;
+                $scope.isDisabled = false;
+                alert('Registro del Deposito creado de forma exitosa...');
+                $('#modalDepositos').modal('hide');
                 $window.location.href = '/home/bancos';
             }
         });
