@@ -18,7 +18,7 @@ namespace ReventonERP.Data.Procesos
         public string referenciaDepositos { get; set; }
         public decimal depositos { get; set; }
         public decimal cargos { get; set; }
-        public int orden { get; set; }
+        public Nullable<int> orden { get; set; }
         public DateTime fechaAlta { get; set; }
         public int idUsuarioAlta { get; set; }
         public Nullable<DateTime> fechaModificacion { get; set; }

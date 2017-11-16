@@ -53,8 +53,8 @@
                         $scope.myTable =
                             $('#dynamic-table')
                                 //.wrap("<div class='dataTables_borderWrap' />")   //if you are applying horizontal scrolling (sScrollX)
-                                .DataTable({
-                                    bAutoWidth: false,
+                            .DataTable({
+                                bAutoWidth: false,
 
                                     data: $scope.bancos.data.Bancos,
                                     columns: [
@@ -138,7 +138,11 @@
 
                                     "language": {
                                         "url": "assets/js/Spanish.json"
-                                    }
+                                    },
+
+                                    "lengthMenu": [[200, 500, 1000, -1], [200, 500, 1000, "All"]],
+
+                                    "bSort": false
                                 });
 
                         $.fn.dataTable.Buttons.defaults.dom.container.className = 'dt-buttons btn-overlap btn-group btn-overlap';
@@ -146,38 +150,11 @@
                         new $.fn.dataTable.Buttons($scope.myTable, {
                             buttons: [
                                 {
-                                    "extend": "colvis",
-                                    "text": "<i class='fa fa-search bigger-110 blue'></i> <span class='hidden'>Show/hide columns</span>",
-                                    "className": "btn btn-white btn-primary btn-bold",
-                                    columns: ':not(:first):not(:last)'
-                                },
-                                {
-                                    "extend": "copy",
-                                    "text": "<i class='fa fa-copy bigger-110 pink'></i> <span class='hidden'>Copy to clipboard</span>",
-                                    "className": "btn btn-white btn-primary btn-bold"
-                                },
-                                {
                                     "extend": "csv",
-                                    "text": "<i class='fa fa-database bigger-110 orange'></i> <span class='hidden'>Export to CSV</span>",
+                                    "text": "<i class='fa fa-file-excel-o bigger-110 green'></i> <span class='hidden'>Export to CSV</span>",
                                     "className": "btn btn-white btn-primary btn-bold"
-                                },
-                                {
-                                    "extend": "excel",
-                                    "text": "<i class='fa fa-file-excel-o bigger-110 green'></i> <span class='hidden'>Export to Excel</span>",
-                                    "className": "btn btn-white btn-primary btn-bold"
-                                },
-                                {
-                                    "extend": "pdf",
-                                    "text": "<i class='fa fa-file-pdf-o bigger-110 red'></i> <span class='hidden'>Export to PDF</span>",
-                                    "className": "btn btn-white btn-primary btn-bold"
-                                },
-                                {
-                                    "extend": "print",
-                                    "text": "<i class='fa fa-print bigger-110 grey'></i> <span class='hidden'>Print</span>",
-                                    "className": "btn btn-white btn-primary btn-bold",
-                                    autoPrint: false,
-                                    message: 'This print was produced using the Print button for DataTables'
-                                }
+                                }                              
+                                
                             ]
                         });
                         $scope.myTable.buttons().container().appendTo($('.tableTools-container'));
