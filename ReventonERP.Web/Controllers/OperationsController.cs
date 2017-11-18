@@ -14,6 +14,8 @@ using ReventonERP.Business.Procesos;
 using Newtonsoft.Json;
 using ReventonERP.Web.Models;
 using System.Globalization;
+using System.Data;
+using ReventonERP.Web.Tools;
 
 namespace ReventonERP.Web.Controllers
 {
@@ -234,6 +236,74 @@ namespace ReventonERP.Web.Controllers
             {
                 return InternalServerError(ex);
             }
-        }       
+        }
+        [Route("busqueda")]
+        [HttpPost]
+        public IHttpActionResult Busqueda(BusquedaModel busquedaModel)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                List<BancosDTO> listBancos = new List<BancosDTO>();
+
+                List<ParameterIn> parameters = new List<ParameterIn>()
+                {
+                    new ParameterIn("numeroCheque", SqlDbType.VarChar, busquedaModel.numeroCheque.Trim()),
+                    new ParameterIn("proveedor", SqlDbType.VarChar, busquedaModel.proveedor.Trim()),
+                    new ParameterIn("numeroFactura", SqlDbType.VarChar, busquedaModel.numeroFactura.Trim()),
+                    new ParameterIn("referenciaDepositos", SqlDbType.VarChar, busquedaModel.referenciaDepositos.Trim()),
+                    new ParameterIn("opcionFechaPago", SqlDbType.Int, busquedaModel.opcionFechaPago),
+                    new ParameterIn("opcionFechaFactura", SqlDbType.Int, busquedaModel.opcionFechaFactura)
+                };
+
+                DataTable dtResult = SQLHelper.ExecuteStoredProcedure("SP_BusquedaAvanzada", parameters.ToArray());
+
+                List<Bancos> bancos = Serialization.ToList<Bancos>(dtResult);
+
+                decimal saldo = 0.00m;
+
+                foreach (Bancos ban in bancos)
+                {
+                    saldo = saldo + (ban.depositos - ban.cargos);
+
+                    listBancos.Add(new BancosDTO()
+                    {
+                        idBancos = ban.idBancos,
+                        tipo = ban.tipo,
+                        numeroCheque = ban.numeroCheque,
+                        fechaPago = ban.fechaPago,
+                        proveedor = ban.proveedor,
+                        numeroFactura = ban.numeroFactura,
+                        fechaFactura = ban.fechaFactura,
+                        referenciaDepositos = ban.referenciaDepositos,
+                        depositos = ban.depositos,
+                        cargos = ban.cargos,
+                        saldo = saldo,
+                        fechaAlta = ban.fechaAlta,
+                        idUsuarioAlta = ban.idUsuarioAlta,
+                        fechaModificacion = ban.fechaModificacion,
+                        idUsuarioModificacion = ban.idUsuarioModificacion,
+                        estatus = ban.estatus
+                    });
+                }
+                
+                ResponseBancosDTO response = new ResponseBancosDTO()
+                {
+                    Bancos = listBancos,
+                    codeResult = 0,
+                    result = "success"
+                };
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
     }
 }

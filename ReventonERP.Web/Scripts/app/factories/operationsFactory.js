@@ -120,6 +120,32 @@
 
                 return defer.promise;
 
+            },
+
+            busqueda: function (numeroCheque, proveedor, numeroFactura, referenciaDepositos, opcionFechaPago, opcionFechaFactura) {
+                var temp = {};
+                var defer = $q.defer();
+                var apiUrlBusqueda = $rootScope.URLApis + 'Operations/busqueda';
+
+                var busquedaModel = {
+                    numeroCheque: numeroCheque,
+                    proveedor: proveedor,
+                    numeroFactura: numeroFactura,
+                    referenciaDepositos: referenciaDepositos,
+                    opcionFechaPago: opcionFechaPago,
+                    opcionFechaFactura: opcionFechaFactura
+                };
+
+                var config = { headers: { 'Content-Type': 'application/json' } };
+
+                $http.post(apiUrlBusqueda, busquedaModel, config).then(function (response) {
+                    defer.resolve(response);
+                }).catch(function (data, status, headers, config) {
+                    var error = { 'data': data, 'status': status, 'headers': headers, 'config': config };
+                    defer.reject(error);
+                });
+
+                return defer.promise;
             }
 
         };

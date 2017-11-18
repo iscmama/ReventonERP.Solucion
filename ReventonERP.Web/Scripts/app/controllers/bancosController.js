@@ -42,6 +42,15 @@
                 depositos: ''
             };
 
+            $scope.busqueda = {
+                numeroCheque: '',
+                proveedor: '',
+                numeroFactura: '',
+                referenciaDepositos: '',
+                opcionFechaPago: 1,
+                opcionFechaFactura: 1
+            };
+
             operationsFactory.obtenerBancos()
                 .then(function (data) {
                     $scope.bancos = data;
@@ -52,10 +61,9 @@
 
                         $scope.myTable =
                             $('#dynamic-table')
-                                //.wrap("<div class='dataTables_borderWrap' />")   //if you are applying horizontal scrolling (sScrollX)
                             .DataTable({
                                 bAutoWidth: false,
-
+                                destroy: true,
                                     data: $scope.bancos.data.Bancos,
                                     columns: [
 
@@ -99,39 +107,6 @@
                                         }
                                     ],
 
-                                    //"aoColumns": [
-                                    //    { "bSortable": false },
-                                    //    { "sName": "numero" },
-                                    //    { "sName": "fechaPago" },
-                                    //    { "sName": "proveedor" },
-                                    //    { "sName": "referencia" },
-                                    //    { "sName": "fechaFactura" },
-                                    //    { "sName": "depositos" },
-                                    //    { "sName": "cargos" },
-                                    //    { "sName": "saldo" },
-                                    //    { "sName": "estatus" },
-                                    //    { "bSortable": false }
-                                    //],
-                                    //"aaSorting": [],
-
-
-                                    //"bProcessing": true,
-                                    //"bServerSide": true,
-                                    //"ajaxSource": $scope.bancos.data,
-
-                                    //,
-                                    //"sScrollY": "200px",
-                                    //"bPaginate": false,
-
-                                    //"sScrollX": "100%",
-                                    //"sScrollXInner": "120%",
-                                    //"bScrollCollapse": true,
-                                    //Note: if you are applying horizontal scrolling (sScrollX) on a ".table-bordered"
-                                    //you may want to wrap the table inside a "div.dataTables_borderWrap" element
-
-                                    //"iDisplayLength": 50
-
-
                                     select: {
                                         style: 'multi'
                                     },
@@ -157,15 +132,7 @@
                                 
                             ]
                         });
-                        $scope.myTable.buttons().container().appendTo($('.tableTools-container'));
-
-                        //style the message box
-                        var defaultCopyAction = $scope.myTable.button(1).action();
-                        $scope.myTable.button(1).action(function (e, dt, button, config) {
-                            defaultCopyAction(e, dt, button, config);
-                            $('.dt-button-info').addClass('gritter-item-wrapper gritter-info gritter-center white');
-                        });
-
+                        $scope.myTable.buttons().container().appendTo($('.tableTools-container'));                        
 
                         var defaultColvisAction = $scope.myTable.button(0).action();
                         $scope.myTable.button(0).action(function (e, dt, button, config) {
@@ -200,194 +167,6 @@
                             if (type === 'row') {
                                 $($scope.myTable.row(index).node()).find('input:checkbox').prop('checked', false);
                             }
-                        });
-
-                        /////////////////////////////////
-                        //table checkboxes
-                        $('th input[type=checkbox], td input[type=checkbox]').prop('checked', false);
-
-                        //select/deselect all rows according to table header checkbox
-                        $('#dynamic-table > thead > tr > th input[type=checkbox], #dynamic-table_wrapper input[type=checkbox]').eq(0).on('click', function () {
-                            var th_checked = this.checked;//checkbox inside "TH" table header
-
-                            $('#dynamic-table').find('tbody > tr').each(function () {
-                                var row = this;
-                                if (th_checked) $scope.myTable.row(row).select();
-                                else $scope.myTable.row(row).deselect();
-                            });
-                        });
-
-                        //select/deselect a row when the checkbox is checked/unchecked
-                        $('#dynamic-table').on('click', 'td input[type=checkbox]', function () {
-                            var row = $(this).closest('tr').get(0);
-                            if (this.checked)
-                                $scope.myTable.row(row).deselect();
-                            else
-                                $scope.myTable.row(row).select();
-                        });
-
-                        $(document).on('click', '#dynamic-table .dropdown-toggle', function (e) {
-                            e.stopImmediatePropagation();
-                            e.stopPropagation();
-                            e.preventDefault();
-                        });
-
-                        $('#dynamic-table').on('click', '#id-btn-dialog2', function (e) {
-
-                            e.stopImmediatePropagation();
-                            e.stopPropagation();
-                            e.preventDefault();
-
-                            $("#dialog-confirm").removeClass('hide').dialog({
-                                resizable: false,
-                                width: '320',
-                                modal: true,
-                                title: "<div class='widget-header'><h4 class='smaller'><i class='ace-icon fa fa-exclamation-triangle red'></i> Confirmar eliminación</h4></div>",
-                                title_html: true,
-                                buttons: [
-                                    {
-                                        html: "<i class='ace-icon fa fa-trash-o bigger-110'></i>&nbsp; Si",
-                                        "class": "btn btn-danger btn-minier",
-                                        click: function () {
-                                            $(this).dialog("close");
-                                            $window.location.href = '/home/bancos';
-                                        }
-                                    }
-                                    ,
-                                    {
-                                        html: "<i class='ace-icon fa fa-times bigger-110'></i>&nbsp; No",
-                                        "class": "btn btn-minier",
-                                        click: function () {
-                                            $(this).dialog("close");
-                                        }
-                                    }
-                                ]
-                            });
-
-                        });
-
-
-                        $('#dynamic-table').on('click', '#btnVerBanco', function (e) {
-                            
-                            e.stopImmediatePropagation();
-                            e.stopPropagation();
-                            e.preventDefault();
-
-                            $("#fechaPagoBanco").datepicker({
-                                showOtherMonths: true,
-                                selectOtherMonths: false,
-                                dateFormat: 'dd/mm/yy'
-                            });
-
-                            $("#fechaFacturaBanco").datepicker({
-                                showOtherMonths: true,
-                                selectOtherMonths: false,
-                                dateFormat: 'dd/mm/yy'
-                            });
-
-                            var row = $(this).parents('tr')[0];
-                            $scope.dataBanco = $scope.myTable.row(row).data();
-
-                            if ($scope.dataBanco.tipo == 1) {
-                                $scope.banco = {
-                                    idBancos: $scope.dataBanco.idBancos,
-                                    numero: $scope.dataBanco.numeroCheque,
-                                    fechaPagoBanco: moment($scope.dataBanco.fechaPago).format("DD/MM/YYYY"),
-                                    proveedor: $scope.dataBanco.proveedor,
-                                    referencia: $scope.dataBanco.numeroFactura,
-                                    fechaFacturaBanco: moment($scope.dataBanco.fechaFactura).format("DD/MM/YYYY"),
-                                    depositos: formatCurrency($scope.dataBanco.depositos, false),
-                                    cargos: formatCurrency($scope.dataBanco.cargos, false),
-                                    saldo: formatCurrency($scope.dataBanco.saldo, false),
-                                    fechaAlta: $scope.dataBanco.fechaAlta,
-                                    idUsuarioAlta: $scope.dataBanco.idUsuarioAlta,
-                                    fechaModificacion: $scope.dataBanco.fechaModificacion,
-                                    idUsuarioModificacion: $scope.dataBanco.idUsuarioModificacion,
-                                    estatus: $scope.dataBanco.estatus
-                                };
-
-                                $('#modalBanco').modal('show');
-                                $scope.editarBanco = false;
-                                $('#numero').focus();
-                                $scope.$apply();
-                            }
-                            else {
-                                $scope.reporteDeposito = {
-                                    idBancos: $scope.dataBanco.idBancos,
-                                    fechaPago: moment($scope.dataBanco.fechaPago).format("DD/MM/YYYY"),
-                                    proveedor: $scope.dataBanco.proveedor,
-                                    referenciaDepositos: $scope.dataBanco.referenciaDepositos,
-                                    depositos: formatCurrency($scope.dataBanco.depositos, false),
-                                };
-
-                                $('#modalDepositos').modal('show');
-                                $scope.editarDeposito = false;
-                                $('#referenciaDepo').focus();
-                                $scope.$apply();
-                            }
-
-                      
-                        });
-
-                        $('#dynamic-table').on('click', '#btnEditarBanco', function (e) {
-
-                            var row = $(this).parents('tr')[0];
-                            $scope.dataBanco = $scope.myTable.row(row).data();
-
-                            e.stopImmediatePropagation();
-                            e.stopPropagation();
-                            e.preventDefault();
-
-                            $("#fechaPagoBanco").datepicker({
-                                showOtherMonths: true,
-                                selectOtherMonths: false,
-                                dateFormat: 'dd/mm/yy'
-                            });
-
-                            $("#fechaFacturaBanco").datepicker({
-                                showOtherMonths: true,
-                                selectOtherMonths: false,
-                                dateFormat: 'dd/mm/yy'
-                            });
-
-                            if ($scope.dataBanco.tipo == 1) {
-                                $scope.banco = {
-                                    idBancos: $scope.dataBanco.idBancos,
-                                    numero: $scope.dataBanco.numeroCheque,
-                                    fechaPagoBanco: moment($scope.dataBanco.fechaPago).format("DD/MM/YYYY"),
-                                    proveedor: $scope.dataBanco.proveedor,
-                                    referencia: $scope.dataBanco.numeroFactura,
-                                    fechaFacturaBanco: moment($scope.dataBanco.fechaFactura).format("DD/MM/YYYY"),
-                                    depositos: formatCurrency($scope.dataBanco.depositos, false),
-                                    cargos: formatCurrency($scope.dataBanco.cargos, false),
-                                    saldo: formatCurrency($scope.dataBanco.saldo, false),
-                                    fechaAlta: $scope.dataBanco.fechaAlta,
-                                    idUsuarioAlta: $scope.dataBanco.idUsuarioAlta,
-                                    fechaModificacion: $scope.dataBanco.fechaModificacion,
-                                    idUsuarioModificacion: $scope.dataBanco.idUsuarioModificacion,
-                                    estatus: $scope.dataBanco.estatus
-                                };
-
-                                $('#modalBanco').modal('show');
-                                $scope.editarBanco = true;
-                                $('#numero').focus();
-                                $scope.$apply();
-                            }
-                            else {
-                                $scope.reporteDeposito = {
-                                    idBancos: $scope.dataBanco.idBancos,
-                                    fechaPago: moment($scope.dataBanco.fechaPago).format("DD/MM/YYYY"),
-                                    proveedor: $scope.dataBanco.proveedor,
-                                    referenciaDepositos: $scope.dataBanco.referenciaDepositos,
-                                    depositos: formatCurrency($scope.dataBanco.depositos, false),
-                                };
-
-                                $('#modalDepositos').modal('show');
-                                $scope.editarDeposito = true;
-                                $('#referenciaDepo').focus();
-                                $scope.$apply();
-                            }
-                            
                         });
 
                     }
@@ -427,7 +206,195 @@
                 showOtherMonths: true,
                 selectOtherMonths: false,
                 dateFormat: 'dd/mm/yy'
+            });
+
+           
+
+            /////////////////////////////////
+            //table checkboxes
+            $('th input[type=checkbox], td input[type=checkbox]').prop('checked', false);
+
+            //select/deselect all rows according to table header checkbox
+            $('#dynamic-table > thead > tr > th input[type=checkbox], #dynamic-table_wrapper input[type=checkbox]').eq(0).on('click', function () {
+                var th_checked = this.checked;//checkbox inside "TH" table header
+
+                $('#dynamic-table').find('tbody > tr').each(function () {
+                    var row = this;
+                    if (th_checked) $scope.myTable.row(row).select();
+                    else $scope.myTable.row(row).deselect();
+                });
+            });
+
+            //select/deselect a row when the checkbox is checked/unchecked
+            $('#dynamic-table').on('click', 'td input[type=checkbox]', function () {
+                var row = $(this).closest('tr').get(0);
+                if (this.checked)
+                    $scope.myTable.row(row).deselect();
+                else
+                    $scope.myTable.row(row).select();
+            });
+
+            $(document).on('click', '#dynamic-table .dropdown-toggle', function (e) {
+                e.stopImmediatePropagation();
+                e.stopPropagation();
+                e.preventDefault();
             });  
+
+            $('#dynamic-table').on('click', '#id-btn-dialog2', function (e) {
+
+                e.stopImmediatePropagation();
+                e.stopPropagation();
+                e.preventDefault();
+
+                $("#dialog-confirm").removeClass('hide').dialog({
+                    resizable: false,
+                    width: '320',
+                    modal: true,
+                    title: "<div class='widget-header'><h4 class='smaller'><i class='ace-icon fa fa-exclamation-triangle red'></i> Confirmar eliminación</h4></div>",
+                    title_html: true,
+                    buttons: [
+                        {
+                            html: "<i class='ace-icon fa fa-trash-o bigger-110'></i>&nbsp; Si",
+                            "class": "btn btn-danger btn-minier",
+                            click: function () {
+                                $(this).dialog("close");
+                                $window.location.href = '/home/bancos';
+                            }
+                        }
+                        ,
+                        {
+                            html: "<i class='ace-icon fa fa-times bigger-110'></i>&nbsp; No",
+                            "class": "btn btn-minier",
+                            click: function () {
+                                $(this).dialog("close");
+                            }
+                        }
+                    ]
+                });
+
+            });
+
+
+            $('#dynamic-table').on('click', '#btnVerBanco', function (e) {
+
+                e.stopImmediatePropagation();
+                e.stopPropagation();
+                e.preventDefault();
+
+                $("#fechaPagoBanco").datepicker({
+                    showOtherMonths: true,
+                    selectOtherMonths: false,
+                    dateFormat: 'dd/mm/yy'
+                });
+
+                $("#fechaFacturaBanco").datepicker({
+                    showOtherMonths: true,
+                    selectOtherMonths: false,
+                    dateFormat: 'dd/mm/yy'
+                });
+
+                var row = $(this).parents('tr')[0];
+                $scope.dataBanco = $scope.myTable.row(row).data();
+
+                if ($scope.dataBanco.tipo == 1) {
+                    $scope.banco = {
+                        idBancos: $scope.dataBanco.idBancos,
+                        numero: $scope.dataBanco.numeroCheque,
+                        fechaPagoBanco: moment($scope.dataBanco.fechaPago).format("DD/MM/YYYY"),
+                        proveedor: $scope.dataBanco.proveedor,
+                        referencia: $scope.dataBanco.numeroFactura,
+                        fechaFacturaBanco: moment($scope.dataBanco.fechaFactura).format("DD/MM/YYYY"),
+                        depositos: formatCurrency($scope.dataBanco.depositos, false),
+                        cargos: formatCurrency($scope.dataBanco.cargos, false),
+                        saldo: formatCurrency($scope.dataBanco.saldo, false),
+                        fechaAlta: $scope.dataBanco.fechaAlta,
+                        idUsuarioAlta: $scope.dataBanco.idUsuarioAlta,
+                        fechaModificacion: $scope.dataBanco.fechaModificacion,
+                        idUsuarioModificacion: $scope.dataBanco.idUsuarioModificacion
+                    };
+
+                    $('#modalBanco').modal('show');
+                    $scope.editarBanco = false;
+                    $('#numero').focus();
+                    $scope.$apply();
+                }
+                else {
+                    $scope.reporteDeposito = {
+                        idBancos: $scope.dataBanco.idBancos,
+                        fechaPago: moment($scope.dataBanco.fechaPago).format("DD/MM/YYYY"),
+                        proveedor: $scope.dataBanco.proveedor,
+                        referenciaDepositos: $scope.dataBanco.referenciaDepositos,
+                        depositos: formatCurrency($scope.dataBanco.depositos, false),
+                    };
+
+                    $('#modalDepositos').modal('show');
+                    $scope.editarDeposito = false;
+                    $('#referenciaDepo').focus();
+                    $scope.$apply();
+                }
+
+
+            });
+
+            $('#dynamic-table').on('click', '#btnEditarBanco', function (e) {
+
+                var row = $(this).parents('tr')[0];
+                $scope.dataBanco = $scope.myTable.row(row).data();
+
+                e.stopImmediatePropagation();
+                e.stopPropagation();
+                e.preventDefault();
+
+                $("#fechaPagoBanco").datepicker({
+                    showOtherMonths: true,
+                    selectOtherMonths: false,
+                    dateFormat: 'dd/mm/yy'
+                });
+
+                $("#fechaFacturaBanco").datepicker({
+                    showOtherMonths: true,
+                    selectOtherMonths: false,
+                    dateFormat: 'dd/mm/yy'
+                });
+
+                if ($scope.dataBanco.tipo == 1) {
+                    $scope.banco = {
+                        idBancos: $scope.dataBanco.idBancos,
+                        numero: $scope.dataBanco.numeroCheque,
+                        fechaPagoBanco: moment($scope.dataBanco.fechaPago).format("DD/MM/YYYY"),
+                        proveedor: $scope.dataBanco.proveedor,
+                        referencia: $scope.dataBanco.numeroFactura,
+                        fechaFacturaBanco: moment($scope.dataBanco.fechaFactura).format("DD/MM/YYYY"),
+                        depositos: formatCurrency($scope.dataBanco.depositos, false),
+                        cargos: formatCurrency($scope.dataBanco.cargos, false),
+                        saldo: formatCurrency($scope.dataBanco.saldo, false),
+                        fechaAlta: $scope.dataBanco.fechaAlta,
+                        idUsuarioAlta: $scope.dataBanco.idUsuarioAlta,
+                        fechaModificacion: $scope.dataBanco.fechaModificacion,
+                        idUsuarioModificacion: $scope.dataBanco.idUsuarioModificacion
+                    };
+
+                    $('#modalBanco').modal('show');
+                    $scope.editarBanco = true;
+                    $('#numero').focus();
+                    $scope.$apply();
+                }
+                else {
+                    $scope.reporteDeposito = {
+                        idBancos: $scope.dataBanco.idBancos,
+                        fechaPago: moment($scope.dataBanco.fechaPago).format("DD/MM/YYYY"),
+                        proveedor: $scope.dataBanco.proveedor,
+                        referenciaDepositos: $scope.dataBanco.referenciaDepositos,
+                        depositos: formatCurrency($scope.dataBanco.depositos, false),
+                    };
+
+                    $('#modalDepositos').modal('show');
+                    $scope.editarDeposito = true;
+                    $('#referenciaDepo').focus();
+                    $scope.$apply();
+                }
+
+            });
         
 
             //override dialog's title function to allow for HTML titles
@@ -520,6 +487,24 @@
 
             $('#modalPagos').modal('show');
             $('#numero').focus();
+        }
+
+        $scope.iniciarBusqueda = function () {
+
+            $scope.busqueda = {
+                numeroCheque: '',
+                proveedor: '',
+                numeroFactura: '',
+                referenciaDepositos: '',
+                opcionFechaPago: 1,
+                opcionFechaFactura: 1
+            };
+
+            $('#busFechaPago').find('option[value="1"]').prop('selected', true);
+
+            $('#busFechaFactura').find('option[value="1"]').prop('selected', true);
+
+            $('#modalBusqueda').modal('show');
         }
 
         $scope.actualizarBancos = function () {
@@ -637,6 +622,161 @@
                 $log.info($scope.bancosFechasPagos);
                 $('#modalPagos').modal('hide');
             }
+        }
+
+        $scope.procesarBusqueda = function () {
+                      
+            operationsFactory.busqueda($scope.busqueda.numeroCheque, $scope.busqueda.proveedor, $scope.busqueda.numeroFactura, $scope.busqueda.referenciaDepositos, $scope.busqueda.opcionFechaPago, $scope.busqueda.opcionFechaFactura)
+                .then(function (data) {
+
+                    $scope.bancos = data;
+
+                    $log.info($scope.bancos.data.Bancos);
+
+                    if ($scope.bancos.data.Bancos.length > 0) {
+
+                        $scope.myTable =
+                            $('#dynamic-table')
+                                .DataTable({
+                                    bAutoWidth: false,
+                                    destroy: true,
+                                    data: $scope.bancos.data.Bancos,
+                                    columns: [
+
+                                        { defaultContent: '<label class="pos-rel"><input type="checkbox" class="ace" /><span class="lbl"></span></label>', bSortable: 'false' },
+
+                                        { data: "numeroCheque" },
+                                        { data: "fechaPago" },
+                                        { data: "proveedor" },
+                                        { data: "numeroFactura" },
+                                        { data: "fechaFactura" },
+                                        { data: "referenciaDepositos" },
+                                        { data: "depositos" },
+                                        { data: "cargos" },
+                                        { data: "saldo" },
+
+                                        {
+                                            defaultContent: '<div class="hidden-sm hidden-xs action-buttons"><a class="blue" href="#" id="btnVerBanco"><i class="ace-icon fa fa-search-plus bigger-130"></i> </a><a class="green" href="#" id="btnEditarBanco"><i class="ace-icon fa fa-pencil bigger-130"></i> </a> <a class="red" href="#" id="id-btn-dialog2"><i class="ace-icon fa fa-trash-o bigger-130"></i> </a> </div>' +
+                                            '<div class="hidden-md hidden-lg"><div class="inline pos-rel"><button class="btn btn-minier btn-yellow dropdown-toggle" data-toggle="dropdown" data-position="auto"><i class="ace-icon fa fa-caret-down icon-only bigger-120"></i> </button><ul class="dropdown-menu dropdown-only-icon dropdown-yellow dropdown-menu-right dropdown-caret dropdown-close"><li> <a href="#" class="tooltip-info" data-rel="tooltip" title="View" id="btnVerBanco"> <span class="blue"> <i class="ace-icon fa fa-search-plus bigger-120"></i></span>   </a> </li> <li> <a href="#" class="tooltip-success" data-rel="tooltip" title="Edit"> <span class="green"><i class="ace-icon fa fa-pencil-square-o bigger-120"></i></span></a></li><li><a href="#" id="id-btn-dialog2"> <span class="red"><i class="ace-icon fa fa-trash-o bigger-120"></i></span></a> </li> </ul></div></div>', bSortable: 'false'
+                                        }
+
+                                    ],
+
+                                    columnDefs: [
+                                        {
+                                            targets: [2, 5], render: function (data, type, row) {
+
+                                                if (data != null) {
+                                                    moment.locale('es');
+                                                    var dateMoment = moment(data);
+                                                    return dateMoment.format("DD-MMM-YYYY").toUpperCase().replace('.', '');
+                                                }
+                                                else {
+                                                    return '';
+                                                }
+                                            }
+                                        },
+                                        {
+                                            targets: [7, 8, 9], render: function (data, type, row) {
+                                                return formatCurrency(data, true);
+                                            }
+                                        }
+                                    ],
+
+                                    select: {
+                                        style: 'multi'
+                                    },
+
+                                    "language": {
+                                        "url": "assets/js/Spanish.json"
+                                    },
+
+                                    "lengthMenu": [[200, 500, 1000, -1], [200, 500, 1000, "All"]],
+
+                                    "bSort": false
+                                });
+
+                        $.fn.dataTable.Buttons.defaults.dom.container.className = 'dt-buttons btn-overlap btn-group btn-overlap';
+
+                        new $.fn.dataTable.Buttons($scope.myTable, {
+                            buttons: [
+                                {
+                                    "extend": "csv",
+                                    "text": "<i class='fa fa-file-excel-o bigger-110 green'></i> <span class='hidden'>Export to CSV</span>",
+                                    "className": "btn btn-white btn-primary btn-bold"
+                                }
+
+                            ]
+                        });
+                        $scope.myTable.buttons().container().appendTo($('.tableTools-container'));
+
+                        var defaultColvisAction = $scope.myTable.button(0).action();
+                        $scope.myTable.button(0).action(function (e, dt, button, config) {
+
+                            defaultColvisAction(e, dt, button, config);
+
+
+                            if ($('.dt-button-collection > .dropdown-menu').length == 0) {
+                                $('.dt-button-collection')
+                                    .wrapInner('<ul class="dropdown-menu dropdown-light dropdown-caret dropdown-caret" />')
+                                    .find('a').attr('href', '#').wrap("<li />")
+                            }
+                            $('.dt-button-collection').appendTo('.tableTools-container .dt-buttons')
+                        });
+
+                        ////
+
+                        setTimeout(function () {
+                            $($('.tableTools-container')).find('a.dt-button').each(function () {
+                                var div = $(this).find(' > div').first();
+                                if (div.length == 1) div.tooltip({ container: 'body', title: div.parent().text() });
+                                else $(this).tooltip({ container: 'body', title: $(this).text() });
+                            });
+                        }, 500);
+
+                        $scope.myTable.on('select', function (e, dt, type, index) {
+                            if (type === 'row') {
+                                $($scope.myTable.row(index).node()).find('input:checkbox').prop('checked', true);
+                            }
+                        });
+                        $scope.myTable.on('deselect', function (e, dt, type, index) {
+                            if (type === 'row') {
+                                $($scope.myTable.row(index).node()).find('input:checkbox').prop('checked', false);
+                            }
+                        });
+
+                        $('#modalBusqueda').modal('hide');
+
+                    }
+                    else {
+                        $scope.myTable = $('#dynamic-table').DataTable({
+                            destroy: true, "language": {
+                                "url": "assets/js/Spanish.json"
+                            }
+                        });
+
+                        $('#modalBusqueda').modal('hide');
+                    }
+
+                    
+
+                })
+                .catch(function (error) {
+
+                    $('#modalBusqueda').modal('hide');
+
+                    $log.error(error);
+
+                    if (error.data.status == 400) {
+                        alert('No se pudo procesar la busqueda. Intente más tarde');
+                        $scope.process = false;
+                        $scope.isDisabled = false;
+                    }
+
+                    full.resolve();
+                });
+
+            
         }
 
         $scope.$watch('completed', function () {
