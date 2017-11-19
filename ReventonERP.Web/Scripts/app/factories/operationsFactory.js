@@ -9,7 +9,7 @@
 
     function operationsFactory($http, $q, $rootScope, $sessionStorage, $window, $log) {
         return {
-            registrarreporte: function (factura, fechaFactura, noCheque, fechaPago, proveedor, t0, excentos, compras, gastos, ivaCompras, ivaGastos, retensionISR, retensionIVA, total, usuario) {
+            registrarreporte: function (factura, fechaFactura, noCheque, fechaPago, proveedor, t0, excentos, compras, gastos, ivaCompras, ivaGastos, retensionISR, retensionIVA, total, usuario, uuid) {
                 var temp = {};
                 var defer = $q.defer();
                 var apiUrlRegistrarReporteBancos = $rootScope.URLApis + 'Operations/registrarreporte';
@@ -32,7 +32,8 @@
                     total: total,
                     fechaAlta: new Date(),
                     idUsuarioAlta: usuario,
-                    estatus : 1
+                    estatus: 1,
+                    uuid: uuid
                 };
 
                 var config = { headers: { 'Content-Type': 'application/json' } };
@@ -60,7 +61,7 @@
 
                 return defer.promise;
             },
-            actualizarBancos: function (idBancos, numero, fechaPagoBanco, proveedor, numeroFactura, fechaFacturaBanco, cargos, usuario) {
+            actualizarBancos: function (idBancos, numero, fechaPagoBanco, proveedor, numeroFactura, fechaFacturaBanco, cargos, usuario, uuid) {
                 var temp = {};
                 var defer = $q.defer();
                 var apiUrlActualizarBancos = $rootScope.URLApis + 'Operations/actualizarbancos';
@@ -78,6 +79,8 @@
                     fechaFactura: fechaFacturaBanco,
                     cargos: cargos,
                     idUsuarioModificacion: usuario,
+                    fechaModificacion: new Date(),
+                    uuid: uuid
                 };
 
                 var config = { headers: { 'Content-Type': 'application/json' } };
@@ -91,7 +94,6 @@
 
                 return defer.promise;
             },
-
             registrardeposito: function (idBancos, referenciaDepositos, fechaPago, proveedor, depositos, usuario) {
                 var temp = {};
                 var defer = $q.defer();
@@ -121,7 +123,6 @@
                 return defer.promise;
 
             },
-
             busqueda: function (numeroCheque, proveedor, numeroFactura, referenciaDepositos, opcionFechaPago, opcionFechaFactura) {
                 var temp = {};
                 var defer = $q.defer();
@@ -139,6 +140,49 @@
                 var config = { headers: { 'Content-Type': 'application/json' } };
 
                 $http.post(apiUrlBusqueda, busquedaModel, config).then(function (response) {
+                    defer.resolve(response);
+                }).catch(function (data, status, headers, config) {
+                    var error = { 'data': data, 'status': status, 'headers': headers, 'config': config };
+                    defer.reject(error);
+                });
+
+                return defer.promise;
+            },
+            actualizarFechas: function (ids, fechaPago, usuario) {
+                var temp = {};
+                var defer = $q.defer();
+                var apiUrlActualizarFechas = $rootScope.URLApis + 'Operations/actualizarFechas';
+
+                var actualizarFechasModel = {
+                    ids: ids,
+                    fechaPago: fechaPago,
+                    usuario: usuario
+                };
+
+                var config = { headers: { 'Content-Type': 'application/json' } };
+
+                $http.post(apiUrlActualizarFechas, actualizarFechasModel, config).then(function (response) {
+                    defer.resolve(response);
+                }).catch(function (data, status, headers, config) {
+                    var error = { 'data': data, 'status': status, 'headers': headers, 'config': config };
+                    defer.reject(error);
+                });
+
+                return defer.promise;
+            },
+            eliminarbanco: function (idBancos, usuario) {
+                var temp = {};
+                var defer = $q.defer();
+                var apiUrlEliminarBanco = $rootScope.URLApis + 'Operations/eliminarbanco';
+
+                var eliminarBancoModel = {
+                    idBancos: idBancos,
+                    usuario: usuario
+                };
+
+                var config = { headers: { 'Content-Type': 'application/json' } };
+
+                $http.post(apiUrlEliminarBanco, eliminarBancoModel, config).then(function (response) {
                     defer.resolve(response);
                 }).catch(function (data, status, headers, config) {
                     var error = { 'data': data, 'status': status, 'headers': headers, 'config': config };

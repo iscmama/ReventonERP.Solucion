@@ -132,6 +132,15 @@
                         </div>
 
                         <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right" for="form-field-1">Folio UUID </label>
+
+                            <div class="col-sm-9">
+                                <input type="text" id="uuid" placeholder="Folio UUID" ng-model="reporteFactura.uuid" maxlength="50" autofocus required />
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
                             <label class="col-sm-3 control-label no-padding-right" for="fechaFactura">Fecha Factura </label>
 
                             <div class="col-sm-9">
@@ -383,6 +392,14 @@
                                 <input type="text" id="referencia" placeholder="Número Factura" class="col-xs-10" ng-model="banco.referencia" ng-disabled="!editarBanco"  maxlength="500" autofocus required />
                             </div>
 
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right" for="form-field-1">Folio UUID </label>
+
+                            <div class="col-sm-9">
+                                <input type="text" id="uuid" placeholder="Folio UUID" ng-model="banco.uuid" ng-disabled="!editarBanco" maxlength="50" autofocus />
+                            </div>
                         </div>
 
                         <div class="form-group">

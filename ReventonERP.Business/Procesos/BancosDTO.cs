@@ -25,5 +25,6 @@ namespace ReventonERP.Business.Procesos
         public Nullable<int> idUsuarioModificacion { get; set; }
         public int estatus { get; set; }
         public decimal saldo { get; set; }
+        public string uuid { get; set; }
     }
 }

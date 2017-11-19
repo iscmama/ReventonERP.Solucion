@@ -52,6 +52,7 @@ namespace ReventonERP.Web.Controllers
                     fechaAlta = reporteBancoModel.fechaAlta,
                     idUsuarioAlta = reporteBancoModel.idUsuarioAlta,
                     estatus = reporteBancoModel.estatus,
+                    uuid = reporteBancoModel.uuid
                 };
 
                 using (ReventonERPRepository _repo = new ReventonERPRepository())
@@ -76,7 +77,8 @@ namespace ReventonERP.Web.Controllers
                         cargos = 0.00m - newReporte.total,
                         fechaAlta = newReporte.fechaAlta,
                         idUsuarioAlta = newReporte.idUsuarioAlta,
-                        estatus = 1
+                        estatus = 1,
+                        uuid = newReporte.uuid
                     };
 
                     result = await _repo.AddBancoAsync(newBanco);
@@ -131,7 +133,8 @@ namespace ReventonERP.Web.Controllers
                             idUsuarioAlta = ban.idUsuarioAlta,
                             fechaModificacion = ban.fechaModificacion,
                             idUsuarioModificacion = ban.idUsuarioModificacion,
-                            estatus = ban.estatus
+                            estatus = ban.estatus,
+                            uuid = ban.uuid
                         });
                     }
                 }
@@ -173,9 +176,10 @@ namespace ReventonERP.Web.Controllers
                     referenciaDepositos = string.Empty,
                     depositos = 0.00m,
                     cargos = bancosModel.cargos,
-                    fechaModificacion = new DateTime(),
+                    fechaModificacion = DateTime.Now,
                     idUsuarioModificacion = bancosModel.idUsuarioModificacion,
-                    estatus = 1
+                    estatus = 1,
+                    uuid = bancosModel.uuid
                 };
 
                 using (ReventonERPRepository _repo = new ReventonERPRepository())
@@ -218,6 +222,7 @@ namespace ReventonERP.Web.Controllers
                     fechaModificacion = DateTime.Now,
                     idUsuarioModificacion = bancosModel.idUsuarioModificacion,
                     estatus = 1,
+                    uuid = bancosModel.uuid
                 };
 
                 using (ReventonERPRepository _repo = new ReventonERPRepository())
@@ -287,7 +292,8 @@ namespace ReventonERP.Web.Controllers
                         idUsuarioAlta = ban.idUsuarioAlta,
                         fechaModificacion = ban.fechaModificacion,
                         idUsuarioModificacion = ban.idUsuarioModificacion,
-                        estatus = ban.estatus
+                        estatus = ban.estatus,
+                        uuid = ban.uuid
                     });
                 }
                 
@@ -299,6 +305,62 @@ namespace ReventonERP.Web.Controllers
                 };
 
                 return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+        [Route("actualizarfechas")]
+        [HttpPost]
+        public async Task<IHttpActionResult> ActualizarFechas(ActualizarFechasModel actualizarFechasModel)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                using (ReventonERPRepository _repo = new ReventonERPRepository())
+                {
+                    int result = await _repo.UpdateFechaPagoBancoAsync(actualizarFechasModel.ids.ToList<int>(), DateTime.ParseExact(actualizarFechasModel.fechaPago, "dd/MM/yyyy", new CultureInfo("es-MX")), actualizarFechasModel.usuario);
+
+                    if (result == 0)
+                    {
+                        return InternalServerError(new Exception("No se pudo actualizar las fechas de Pago. Intente más tarde"));
+                    }
+
+                    return Ok("success");
+                }
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+        [Route("eliminarbanco")]
+        [HttpPost]
+        public async Task<IHttpActionResult> EliminarBanco(EliminarBancoModel eliminarBancoModel)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                using (ReventonERPRepository _repo = new ReventonERPRepository())
+                {
+                    int result = await _repo.RemoveBancoAsync(eliminarBancoModel.idBancos);
+
+                    if (result == 0)
+                    {
+                        return InternalServerError(new Exception("No se pudo eliminar el registro solicitado. Intente más tarde"));
+                    }
+
+                    return Ok("success");
+                }
             }
             catch (Exception ex)
             {

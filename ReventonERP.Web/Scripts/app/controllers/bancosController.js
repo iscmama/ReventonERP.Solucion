@@ -32,7 +32,8 @@
                 ivaGastos: '',
                 retencionISR: '',
                 retencionIVA: '',
-                total: ''
+                total: '',
+                uuid: ''
             };
 
             $scope.reporteDeposito = {
@@ -246,6 +247,9 @@
                 e.stopPropagation();
                 e.preventDefault();
 
+                var row = $(this).parents('tr')[0];
+                $scope.dataBanco = $scope.myTable.row(row).data();
+
                 $("#dialog-confirm").removeClass('hide').dialog({
                     resizable: false,
                     width: '320',
@@ -257,8 +261,29 @@
                             html: "<i class='ace-icon fa fa-trash-o bigger-110'></i>&nbsp; Si",
                             "class": "btn btn-danger btn-minier",
                             click: function () {
-                                $(this).dialog("close");
-                                $window.location.href = '/home/bancos';
+
+                                operationsFactory.eliminarbanco($scope.dataBanco.idBancos, $sessionStorage.authorizationData.idUsuario)
+                                    .then(function (data) {
+
+                                        $scope.eliminacionOK = true;
+
+                                    })
+                                    .catch(function (error) {
+
+                                        $log.error(error);
+
+                                        $(this).dialog("close");
+
+                                        if (error.data.status == 400) {
+                                            alert('No se pudo eliminar el registro solicitado. Intente más tarde');
+                                            $scope.process = false;
+                                            $scope.isDisabled = false;
+                                        }
+
+                                        full.resolve();
+                                    });
+
+                               
                             }
                         }
                         ,
@@ -310,7 +335,8 @@
                         fechaAlta: $scope.dataBanco.fechaAlta,
                         idUsuarioAlta: $scope.dataBanco.idUsuarioAlta,
                         fechaModificacion: $scope.dataBanco.fechaModificacion,
-                        idUsuarioModificacion: $scope.dataBanco.idUsuarioModificacion
+                        idUsuarioModificacion: $scope.dataBanco.idUsuarioModificacion,
+                        uuid: $scope.dataBanco.uuid
                     };
 
                     $('#modalBanco').modal('show');
@@ -371,7 +397,8 @@
                         fechaAlta: $scope.dataBanco.fechaAlta,
                         idUsuarioAlta: $scope.dataBanco.idUsuarioAlta,
                         fechaModificacion: $scope.dataBanco.fechaModificacion,
-                        idUsuarioModificacion: $scope.dataBanco.idUsuarioModificacion
+                        idUsuarioModificacion: $scope.dataBanco.idUsuarioModificacion,
+                        uuid: $scope.dataBanco.uuid
                     };
 
                     $('#modalBanco').modal('show');
@@ -455,7 +482,8 @@
                 ivaGastos: '',
                 retencionISR: '',
                 retencionIVA: '',
-                total: ''
+                total: '',
+                uuid: ''
             };
             $('#modal-table').modal('show');
             $('#numero').focus();
@@ -510,7 +538,7 @@
         $scope.actualizarBancos = function () {
 
             operationsFactory.actualizarBancos($scope.banco.idBancos, $scope.banco.numero, $scope.banco.fechaPagoBanco, $scope.banco.proveedor, $scope.banco.referencia, $scope.banco.fechaFacturaBanco
-                ,$scope.banco.cargos, $sessionStorage.authorizationData.idUsuario)
+                , $scope.banco.cargos, $sessionStorage.authorizationData.idUsuario, $scope.banco.uuid)
                 .then(function (data) {
                     $log.info(data.data);
                     $scope.actualizado = true;
@@ -519,11 +547,12 @@
 
                     $log.error(error);
 
-                    if (error.data.status == 400) {
-                        alert('No se pudo actualizar la información de bancos. Intente más tarde');
-                        $scope.process = false;
-                        $scope.isDisabled = false;
-                    }
+                    alert('No se pudo actualizar la información de bancos. Intente más tarde');
+
+                    $('#modalBanco').modal('hide');
+
+                    $scope.process = false;
+                    $scope.isDisabled = false;
 
                     full.resolve();
                 });
@@ -535,7 +564,7 @@
             operationsFactory.registrarreporte($scope.reporteFactura.factura, $('#fechaFactura').val(), $scope.reporteFactura.numeroCheque, $('#fechaPago').val()
                 , $scope.reporteFactura.proveedor, $scope.reporteFactura.tasaCero, $scope.reporteFactura.excentos, $scope.reporteFactura.compras, $scope.reporteFactura.gastos
                 , $scope.reporteFactura.ivaCompras, $scope.reporteFactura.ivaGastos, $scope.reporteFactura.retencionISR, $scope.reporteFactura.retencionIVA, $scope.reporteFactura.total
-                , $sessionStorage.authorizationData.idUsuario)
+                , $sessionStorage.authorizationData.idUsuario, $scope.reporteFactura.uuid)
                 .then(function (data) {
                     $log.info(data.data);
                     $scope.completed = true;
@@ -620,7 +649,25 @@
             }
             else {
                 $log.info($scope.bancosFechasPagos);
-                $('#modalPagos').modal('hide');
+
+
+                operationsFactory.actualizarFechas($scope.bancosFechasPagos, $('#fechaPagoAsigna').val(), $sessionStorage.authorizationData.idUsuario)
+                    .then(function (data) {
+                        $log.info(data.data);
+                        $scope.fechasOK = true;
+                    })
+                    .catch(function (error) {
+                        $log.error(error);
+                        $('#modalPagos').modal('hide');
+
+                        if (error.data.status == 400) {
+                            alert('No se pudo procesar la asignación de fechas de pago. Intente más tarde');
+                            $scope.process = false;
+                            $scope.isDisabled = false;
+                        }
+
+                        full.resolve();
+                    });                
             }
         }
 
@@ -815,6 +862,26 @@
                 $scope.isDisabled = false;
                 alert('Registro del Deposito creado de forma exitosa...');
                 $('#modalDepositos').modal('hide');
+                $window.location.href = '/home/bancos';
+            }
+        });
+
+        $scope.$watch('fechasOK', function () {
+            if ($scope.fechasOK) {
+                $scope.process = false;
+                $scope.isDisabled = false;
+                alert('La actualización de las fechas de pago se realizo de forma exitosa...');
+                $('#modalPagos').modal('hide');
+                $window.location.href = '/home/bancos';
+            }
+        });
+
+        $scope.$watch('eliminacionOK', function () {
+            if ($scope.eliminacionOK) {
+                $scope.process = false;
+                $scope.isDisabled = false;
+                alert('La eliminación del registro se realizo de forma exitosa...');
+                $(this).dialog("close");
                 $window.location.href = '/home/bancos';
             }
         });

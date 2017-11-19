@@ -194,5 +194,45 @@ namespace ReventonERP.Data
                 throw ex;
             }
         }
+        public async Task<int> UpdateFechaPagoBancoAsync(List<int> ids, DateTime fechaPago, int usuario)
+        {
+            try
+            {
+                var bancos = _context.Bancos.Where(b => ids.Contains(b.idBancos));
+
+                await bancos.ForEachAsync(b =>
+                                                {
+                                                    b.fechaPago = fechaPago;
+                                                    b.idUsuarioModificacion = usuario;
+                                                    b.fechaModificacion = DateTime.Now;
+                                                }
+                                           );
+
+                return await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task<int> RemoveBancoAsync(int idBancos)
+        {
+            try
+            {
+                var banco = await _context.Bancos.SingleAsync(b => b.idBancos == idBancos);
+
+                if (banco != null)
+                {
+                    _context.Bancos.Remove(banco);
+                    return await _context.SaveChangesAsync();
+                }
+
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }

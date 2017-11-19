@@ -31,5 +31,6 @@ namespace ReventonERP.Web.Models
         public Nullable<DateTime> fechaModificacion { get; set; }
         public Nullable<int> idUsuarioModificacion { get; set; }
         public int estatus { get; set; }
+        public string uuid { get; set; }
     }
 }
