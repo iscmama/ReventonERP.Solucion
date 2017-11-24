@@ -52,6 +52,11 @@
                 Busquedas
             </a>
 
+            <a role="button" data-toggle="modal" class="btn btn-app btn-default" ng-click="reiniciar()">
+                <i class="ace-icon fa fa-undo bigger-200"></i>
+                Reiniciar
+            </a>
+
         </div>
     </div>
 
@@ -398,7 +403,7 @@
                             <label class="col-sm-3 control-label no-padding-right" for="form-field-1">Folio UUID </label>
 
                             <div class="col-sm-9">
-                                <input type="text" id="uuid" placeholder="Folio UUID" ng-model="banco.uuid" ng-disabled="!editarBanco" maxlength="50" autofocus />
+                                <input type="text" id="uuid" placeholder="Folio UUID" class="col-xs-10" ng-model="banco.uuid" ng-disabled="!editarBanco" maxlength="50" autofocus />
                             </div>
                         </div>
 
@@ -641,14 +646,15 @@
                                     <div class="col-sm-9">
                                         <div class="input-group">
 
-                                            <select class="form-control" id="busFechaPago" ng-model="busqueda.opcionFechaPago">
-                                                <option value="1">Todas las fechas</option>
+                                            <select class="form-control" id="busFechaPago" ng-model="busqueda.opcionFechaPago" ng-change="busquedaFechaPago()">
+                                                <option value="1" selected="selected">Todas las fechas</option>
                                                 <option value="2">Hasta el día actual</option>
                                                 <option value="3">Mes actual</option>
                                                 <option value="4">Año actual</option>
                                                 <option value="5">Lo que va del mes</option>
                                                 <option value="6">Lo que va del año</option>
                                                 <option value="7">Mes anterior</option>
+                                                <option value="8">Rango de fechas</option>
                                             </select>
 
                                         </div>
@@ -659,6 +665,36 @@
                             </div>
                         </div>
 
+                        <div class="form-group" ng-show="buscarxFechasPago">
+                            <label class="col-sm-3 control-label no-padding-right" for="form-field-1">Fechas </label>
+
+                            <div class="col-sm-9">
+                                <div class="row">
+                                    <div class="col-sm-5">
+                                        <div class="input-group">
+                                            <input class="form-control date-picker" id="fechaPagoInicio" type="text" data-date-format="dd-mm-yyyy" placeholder="dd/mm/yyyy" ng-model="busqueda.fechaPagoInicio"  maxlength="10" autofocus  />
+                                            <span class="input-group-addon">
+                                                <i class="fa fa-calendar bigger-110"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-5">
+                                       
+                                        <div class="input-group">
+                                            <input class="form-control date-picker" id="fechaPagoFin" type="text" data-date-format="dd-mm-yyyy" placeholder="dd/mm/yyyy" ng-model="busqueda.fechaPagoFin" maxlength="10" autofocus />
+                                            <span class="input-group-addon">
+                                                <i class="fa fa-calendar bigger-110"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+
+
                         <div class="form-group">
                             <label class="col-sm-3 control-label no-padding-right" for="form-field-1">Fecha Factura </label>
 
@@ -668,14 +704,15 @@
                                     <div class="col-sm-9">
                                         <div class="input-group">
 
-                                            <select class="form-control" id="busFechaFactura" ng-model="busqueda.opcionFechaFactura">
-                                                <option value="1">Todas las fechas</option>
+                                            <select class="form-control" id="busFechaFactura" ng-model="busqueda.opcionFechaFactura" ng-change="busquedaFechaFactura()">
+                                                <option value="1" selected="selected">Todas las fechas</option>
                                                 <option value="2">Hasta el día actual</option>
                                                 <option value="3">Mes actual</option>
                                                 <option value="4">Año actual</option>
                                                 <option value="5">Lo que va del mes</option>
                                                 <option value="6">Lo que va del año</option>
                                                 <option value="7">Mes anterior</option>
+                                                <option value="8">Rango de fechas</option>
                                             </select>
 
                                         </div>
@@ -683,6 +720,34 @@
                                 </div>
 
 
+                            </div>
+                        </div>
+
+                        <div class="form-group" ng-show="buscarxFechasFactura">
+                            <label class="col-sm-3 control-label no-padding-right" for="form-field-1">Fechas </label>
+
+                            <div class="col-sm-9">
+                                <div class="row">
+                                    <div class="col-sm-5">
+                                        <div class="input-group">
+                                            <input class="form-control date-picker" id="fechaFacturaInicio" type="text" data-date-format="dd-mm-yyyy" placeholder="dd/mm/yyyy" ng-model="busqueda.fechaFacturaInicio" maxlength="10" autofocus  />
+                                            <span class="input-group-addon">
+                                                <i class="fa fa-calendar bigger-110"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-5">
+
+                                        <div class="input-group">
+                                            <input class="form-control date-picker" id="fechaFacturaFin" type="text" data-date-format="dd-mm-yyyy" placeholder="dd/mm/yyyy" ng-model="busqueda.fechaFacturaFin" maxlength="10" autofocus  />
+                                            <span class="input-group-addon">
+                                                <i class="fa fa-calendar bigger-110"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                </div>
                             </div>
                         </div>
 

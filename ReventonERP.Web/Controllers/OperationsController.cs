@@ -262,7 +262,12 @@ namespace ReventonERP.Web.Controllers
                     new ParameterIn("numeroFactura", SqlDbType.VarChar, busquedaModel.numeroFactura.Trim()),
                     new ParameterIn("referenciaDepositos", SqlDbType.VarChar, busquedaModel.referenciaDepositos.Trim()),
                     new ParameterIn("opcionFechaPago", SqlDbType.Int, busquedaModel.opcionFechaPago),
-                    new ParameterIn("opcionFechaFactura", SqlDbType.Int, busquedaModel.opcionFechaFactura)
+                    new ParameterIn("opcionFechaFactura", SqlDbType.Int, busquedaModel.opcionFechaFactura),
+                    new ParameterIn("fechaPagoInicio", SqlDbType.VarChar, busquedaModel.fechaPagoInicio.Trim()),
+                    new ParameterIn("fechaPagoFin", SqlDbType.VarChar, busquedaModel.fechaPagoFin.Trim()),
+                    new ParameterIn("fechaFacturaInicio", SqlDbType.VarChar, busquedaModel.fechaFacturaInicio.Trim()),
+                    new ParameterIn("fechaFacturaFin", SqlDbType.VarChar, busquedaModel.fechaFacturaFin.Trim()),
+
                 };
 
                 DataTable dtResult = SQLHelper.ExecuteStoredProcedure("SP_BusquedaAvanzada", parameters.ToArray());

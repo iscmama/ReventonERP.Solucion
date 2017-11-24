@@ -13,5 +13,9 @@ namespace ReventonERP.Web.Models
         public string referenciaDepositos { get; set; }
         public int opcionFechaPago { get; set; }
         public int opcionFechaFactura { get; set; }
+        public string fechaPagoInicio { get; set; }
+        public string fechaPagoFin { get; set; }
+        public string fechaFacturaInicio { get; set; }
+        public string fechaFacturaFin { get; set; }
     }
 }

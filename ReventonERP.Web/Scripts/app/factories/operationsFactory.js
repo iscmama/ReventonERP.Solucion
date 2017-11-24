@@ -123,7 +123,7 @@
                 return defer.promise;
 
             },
-            busqueda: function (numeroCheque, proveedor, numeroFactura, referenciaDepositos, opcionFechaPago, opcionFechaFactura) {
+            busqueda: function (numeroCheque, proveedor, numeroFactura, referenciaDepositos, opcionFechaPago, opcionFechaFactura, fechaPagoInicio, fechaPagoFin, fechaFacturaInicio, fechaFacturaFin) {
                 var temp = {};
                 var defer = $q.defer();
                 var apiUrlBusqueda = $rootScope.URLApis + 'Operations/busqueda';
@@ -134,7 +134,11 @@
                     numeroFactura: numeroFactura,
                     referenciaDepositos: referenciaDepositos,
                     opcionFechaPago: opcionFechaPago,
-                    opcionFechaFactura: opcionFechaFactura
+                    opcionFechaFactura: opcionFechaFactura,
+                    fechaPagoInicio: fechaPagoInicio,
+                    fechaPagoFin: fechaPagoFin,
+                    fechaFacturaInicio: fechaFacturaInicio,
+                    fechaFacturaFin: fechaFacturaFin
                 };
 
                 var config = { headers: { 'Content-Type': 'application/json' } };

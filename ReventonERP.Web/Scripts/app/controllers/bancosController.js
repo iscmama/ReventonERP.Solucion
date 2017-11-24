@@ -17,6 +17,8 @@
             $scope.editarBanco = false;
             $scope.editarDeposito = false;
             $scope.fechaPagoAsigna = null;
+            $scope.buscarxFechasPago = false;
+            $scope.buscarxFechasFactura = false;
 
             $scope.reporteFactura = {
                 factura: '',
@@ -49,7 +51,11 @@
                 numeroFactura: '',
                 referenciaDepositos: '',
                 opcionFechaPago: 1,
-                opcionFechaFactura: 1
+                opcionFechaFactura: 1,
+                fechaPagoInicio: '',
+                fechaPagoFin: '',
+                fechaFacturaInicio: '',
+                fechaFacturaFin: ''
             };
 
             operationsFactory.obtenerBancos()
@@ -209,7 +215,30 @@
                 dateFormat: 'dd/mm/yy'
             });
 
-           
+            $("#fechaPagoInicio").datepicker({
+                showOtherMonths: true,
+                selectOtherMonths: false,
+                dateFormat: 'dd/mm/yy'
+            });
+
+            $("#fechaPagoFin").datepicker({
+                showOtherMonths: true,
+                selectOtherMonths: false,
+                dateFormat: 'dd/mm/yy'
+            });
+
+            $("#fechaFacturaInicio").datepicker({
+                showOtherMonths: true,
+                selectOtherMonths: false,
+                dateFormat: 'dd/mm/yy'
+            });
+
+            $("#fechaFacturaFin").datepicker({
+                showOtherMonths: true,
+                selectOtherMonths: false,
+                dateFormat: 'dd/mm/yy'
+            });
+                      
 
             /////////////////////////////////
             //table checkboxes
@@ -525,14 +554,25 @@
                 numeroFactura: '',
                 referenciaDepositos: '',
                 opcionFechaPago: 1,
-                opcionFechaFactura: 1
+                opcionFechaFactura: 1,
+                fechaPagoInicio: '',
+                fechaPagoFin: '',
+                fechaFacturaInicio: '',
+                fechaFacturaFin: ''
             };
 
             $('#busFechaPago').find('option[value="1"]').prop('selected', true);
 
             $('#busFechaFactura').find('option[value="1"]').prop('selected', true);
 
+            $scope.buscarxFechasPago = false;
+            $scope.buscarxFechasFactura = false;
+
             $('#modalBusqueda').modal('show');
+        }
+
+        $scope.reiniciar = function () {
+            $window.location.href = '/home/bancos';
         }
 
         $scope.actualizarBancos = function () {
@@ -672,8 +712,35 @@
         }
 
         $scope.procesarBusqueda = function () {
+
+            if ($scope.busqueda.opcionFechaPago == 8) {
+
+                if ($scope.busqueda.fechaPagoInicio == '') {
+                    alert('Proporcione fecha inicio de pago');
+                    return;
+                }
+
+                if ($scope.busqueda.fechaPagoFin == '') {
+                    alert('Proporcione fecha fin de pago');
+                    return;
+                }
+            }
+
+            if ($scope.busqueda.opcionFechaFactura == 8) {
+
+                if ($scope.busqueda.fechaFacturaInicio == '') {
+                    alert('Proporcione fecha inicio de factura');
+                    return;
+                }
+
+                if ($scope.busqueda.fechaFacturaFin == '') {
+                    alert('Proporcione fecha fin de factura');
+                    return;
+                }
+            }
                       
-            operationsFactory.busqueda($scope.busqueda.numeroCheque, $scope.busqueda.proveedor, $scope.busqueda.numeroFactura, $scope.busqueda.referenciaDepositos, $scope.busqueda.opcionFechaPago, $scope.busqueda.opcionFechaFactura)
+            operationsFactory.busqueda($scope.busqueda.numeroCheque, $scope.busqueda.proveedor, $scope.busqueda.numeroFactura, $scope.busqueda.referenciaDepositos, $scope.busqueda.opcionFechaPago, $scope.busqueda.opcionFechaFactura, $scope.busqueda.fechaPagoInicio
+                , $scope.busqueda.fechaPagoFin, $scope.busqueda.fechaFacturaInicio, $scope.busqueda.fechaFacturaFin)
                 .then(function (data) {
 
                     $scope.bancos = data;
@@ -809,16 +876,15 @@
 
                 })
                 .catch(function (error) {
+                    
+                    $log.error(error);
+
+                    alert('No se pudo procesar la busqueda. Intente más tarde');
+                    $scope.process = false;
+                    $scope.isDisabled = false;
 
                     $('#modalBusqueda').modal('hide');
 
-                    $log.error(error);
-
-                    if (error.data.status == 400) {
-                        alert('No se pudo procesar la busqueda. Intente más tarde');
-                        $scope.process = false;
-                        $scope.isDisabled = false;
-                    }
 
                     full.resolve();
                 });
@@ -885,6 +951,26 @@
                 $window.location.href = '/home/bancos';
             }
         });
+
+        $scope.busquedaFechaPago = function () {
+
+            if ($scope.busqueda.opcionFechaPago == 8) {
+                $scope.buscarxFechasPago = true;
+            }
+            else {
+                $scope.buscarxFechasPago = false;
+            }           
+        }
+
+        $scope.busquedaFechaFactura = function () {
+
+            if ($scope.busqueda.opcionFechaFactura == 8) {
+                $scope.buscarxFechasFactura = true;
+            }
+            else {
+                $scope.buscarxFechasFactura = false;
+            }
+        }
 
         function formatCurrency(num, simbol) {
             num = num.toString().replace(/\$|\,/g, '');
